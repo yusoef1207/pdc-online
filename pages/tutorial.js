@@ -22,7 +22,9 @@ class Tutorial extends Component {
             questions: [],
             activeQuestion: 0,
             timer: null,
-            notify: 0
+            notify: 0,
+            submitted: false,
+            page: 0
         }
     }
 
@@ -30,20 +32,59 @@ class Tutorial extends Component {
         this.setState({activeQuestion: qId})
     }
 
-    setAnswer(aId, qId, tId) {
-        axios.post('http://localhost:4000/answer', {
-            answer_id : aId,
-            applicant_program_id : this.state.user.applicant_program_id,
-            selected_time: moment().format('YYYY-MM-DD H:m:s')
-        }).then(() => {
-            var a = this.state.questions;
+    nextPage () {
+        let next = this.state.page;
+        next =  ((next + 1) == this.state.questions.length) ? next : ++next;
 
-            a[tId][qId].isAnswered = true;
+        this.setActive(next);
 
-            this.setState({questions: a});
-            
-            console.log('====> programId: ' + getCookies('PROG-ID') + ' answerId: ' + aId + ' Selected')
+        this.setState({
+            page : next
         })
+    }
+
+    prevPage () {
+
+        let page = this.state.page;
+        let prev = page == 0 ? 0 : page -1;
+
+        this.setActive(prev);
+
+        this.setState({
+            page : prev 
+        })
+    }
+
+    submitAnswer () {
+        this.setState({submitted: true})
+    }
+
+    setAnswer(aId, qId, tId) {
+
+        var a = this.state.questions;
+
+        if(!a[tId][qId].isAnswered) {
+            a[tId][qId].isAnswered = true;
+            a[tId].totalAnswered = a[tId].totalAnswered + 1;
+            this.setState({questions: a});
+        }
+
+
+        // axios.post('http://localhost:4000/answer', {
+        //     answer_id : aId,
+        //     applicant_program_id : this.state.user.applicant_program_id,
+        //     selected_time: moment().format('YYYY-MM-DD H:m:s')
+        // }).then(() => {
+        //     var a = this.state.questions;
+
+        //     if(!a[tId][qId].isAnswered) {
+        //         a[tId][qId].isAnswered = true;
+        //         a[tId].totalAnswered = a[tId].totalAnswered + 1;
+        //         this.setState({questions: a});
+        //     }
+            
+        //     console.log('====> programId: ' + getCookies('PROG-ID') + ' answerId: ' + aId + ' Selected')
+        // })
     }
 
     startTimer(duration) {
@@ -104,11 +145,17 @@ class Tutorial extends Component {
             axios.get(`http://localhost:4000/question/${getCookies('PROG-ID')}`).then((res) => {
                 if(res.data) {
                     let questions = this.chunkArray(res.data, 10);
-
-                    questions.forEach((d) => {
+                    let totalQuestions = [];
+                    questions.forEach((d, idx) => {
+                        d.totalAnswered = 0;
+                        
                         d.forEach((d2) => {
                             d2.isAnswered = null;
-                        })
+                            if(d2.answer.length) totalQuestions[idx] = totalQuestions[idx] ? totalQuestions[idx] + 1 : 1;
+                        });
+
+                        d.totalQuestions = totalQuestions[idx] ? totalQuestions[idx] : 0;
+
                     })
 
                     this.setState({questions: questions})
@@ -199,7 +246,7 @@ class Tutorial extends Component {
                                                                                         <li key={idx} className="nav-item">
                                                                                             <a onClick={this.setActive.bind(this, idx)} className={`nav-link ${this.state.activeQuestion == idx ? 'active' : ''}`} data-toggle="tab" href={`#questions-${idx}`} role="tab">
                                                                                                 {idx * 10 + 1} - {(idx + 1) * 10}
-                                                                                                <label className="badge badge-danger" style={{marginBottom:'0px'}}>5</label>
+                                                                                                {this.state.submitted && tab.totalQuestions != tab.totalAnswered ? (<label className="badge badge-danger" style={{marginBottom:'0px'}}>!</label>) : null}
                                                                                             </a>
                                                                                         </li>
                                                                                     );
@@ -227,7 +274,7 @@ class Tutorial extends Component {
                                                                                                     {
                                                                                                         tab.map((res, qIdx) => {
                                                                                                             return (
-                                                                                                                <tr key={qIdx} style={!res.isAnswered ? {backgroundColor: '#f2dede'} : {backgroundColor: 'white'}}>
+                                                                                                                <tr key={qIdx} style={!res.isAnswered && this.state.submitted ? {backgroundColor: '#f2dede'} : {backgroundColor: 'white'}}>
                                                                                                                     <th scope="row">{qIdx+1}</th> 
                                                                                                                     <td style={{whiteSpace:'normal'}}>  
                                                                                                                         <p>{res.question_detail}</p> 
@@ -264,7 +311,7 @@ class Tutorial extends Component {
                                                                                         <li key={idx} className="nav-item">
                                                                                             <a onClick={this.setActive.bind(this, idx)} className={`nav-link ${this.state.activeQuestion == idx ? 'active' : ''}`} data-toggle="tab" href={`#questions-${idx}`} role="tab">
                                                                                                 {idx * 10 + 1} - {(idx + 1) * 10}
-                                                                                                <label className="badge badge-danger" style={{marginBottom:'0px'}}>5</label>
+                                                                                                {this.state.submitted && tab.totalQuestions != tab.totalAnswered ? (<label className="badge badge-danger" style={{marginBottom:'0px'}}>!</label>) : null}
                                                                                             </a>
                                                                                         </li>
                                                                                     );
@@ -273,8 +320,19 @@ class Tutorial extends Component {
                                                                         </ul>
                                                                         <div className="row">
                                                                             <div className="col-md-6 offset-md-6" style={{textAlign:'right', fontSize:'17px'}}>
-                                                                                <label className="label label-inverse-primary"><i className="ti-angle-double-left"></i> Sebelumnya</label>
-                                                                                <label className="label label-inverse-primary">Berikutnya<i className="ti-angle-double-right"></i></label>
+                                                                                <a onClick={this.prevPage.bind(this, this.state.prev)}>
+                                                                                    <label className="label label-inverse-primary"><i className="ti-angle-double-left"></i> Sebelumnya</label>
+                                                                                </a>
+                                                                                <a onClick={this.nextPage.bind(this, this.state.next)}>
+                                                                                    <label className="label label-inverse-primary">Berikutnya<i className="ti-angle-double-right"></i></label>
+                                                                                </a>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div className="row">
+                                                                            <div className="col-md-6 offset-md-6" style={{textAlign:'right', fontSize:'17px'}}>
+                                                                                <a className="btn btn-success" onClick={this.submitAnswer.bind(this)}>
+                                                                                    Submit
+                                                                                </a>
                                                                             </div>
                                                                         </div>
                                                                     </div>

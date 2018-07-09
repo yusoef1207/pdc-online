@@ -81,10 +81,7 @@ class Start extends Component {
 					<HeaderComponent user={user} />
 				
 					<div className="pcoded-main-container">
-						<div className="pcoded-wrapper">
-							<NavComponent user={user} />
-
-							
+						<div className="pcoded-wrapper">							
 							<div className="pcoded-content">
 								<div className="pcoded-inner-content">
 
