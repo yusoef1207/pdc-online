@@ -37,11 +37,7 @@ class Header extends Component {
 								</a>
 							</div>
 							<div className="navbar-container container-fluid">
-								<ul className="nav-left">
-									<li>
-										<div className="sidebar_toggle"><a href="javascript:void(0)"><i className="ti-menu"></i></a></div>
-									</li>
-								</ul>
+								
 
 
 								<ul className="nav-right">
