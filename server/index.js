@@ -26,6 +26,7 @@ app.prepare()
     server.get('/user/:id', api.user);
     server.post('/add_photo', api.user);
     
+    server.post('/answer-history', api.program);
     server.post('/answer', api.program);
     server.get('/program', api.program);
     server.get('/question/:id', api.program);

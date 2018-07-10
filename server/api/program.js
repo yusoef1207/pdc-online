@@ -12,14 +12,41 @@ router.get('/program', function(req, res, next) {
     }); 
 });
 
-router.post('/answer', function(req, res, next) {  
-    Program.answer(req.body, function(err, results, fields) {
+router.post('/answer-history', function(req, res, next) {  
+    Program.answerHistory(req.body, function(err, results, fields) {
         if (err) {  
             res.json(err);  
         } else {  
             res.json(results);
         }  
     }); 
+});
+
+router.post('/answer', function(req, res, next) {  
+	if(req.body && req.body.data.length) {
+		let data = req.body.data;
+		let applicantId = req.body.applicantId;
+		let selectedTime = req.body.selectedTime;
+		let values = [];
+
+		data.forEach((answer, i) => {
+			if (answer) {
+				values.push([
+					answer, 
+					applicantId, 
+					selectedTime
+				]); 
+			}
+		})
+	    
+	    Program.answer(values, function(err, results, fields) {
+	        if (err) {  
+            	res.json(err);  
+	        } else {  
+	            res.json(results);
+	        }
+	    });
+	}
 });
 
 router.get('/question/:id', function(req, res, next) {  

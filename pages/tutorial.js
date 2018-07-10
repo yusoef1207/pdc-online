@@ -20,27 +20,22 @@ class Tutorial extends Component {
             user: {},
             isLoading: true,
             questions: [],
-            activeQuestion: 0,
             timer: null,
             notify: 0,
             submitted: false,
-            page: 0
+            page: 1
         }
     }
 
-    setActive (qId) {
-        this.setState({activeQuestion: qId})
+    setPage (qId) {
+        this.setState({page: qId})
     }
 
     nextPage () {
         let next = this.state.page;
-        next =  ((next + 1) == this.state.questions.length) ? next : ++next;
+        next =  (next == this.state.questions.length) ? next : ++next;
 
-        this.setActive(next);
-
-        this.setState({
-            page : next
-        })
+        this.setPage(next);
     }
 
     prevPage () {
@@ -48,43 +43,50 @@ class Tutorial extends Component {
         let page = this.state.page;
         let prev = page == 0 ? 0 : page -1;
 
-        this.setActive(prev);
-
-        this.setState({
-            page : prev 
-        })
+        this.setPage(prev);
     }
 
     submitAnswer () {
         this.setState({submitted: true})
+
+        let questions = this.state.questions;
+        let totalAnswered = 0; let totalQuestion = 0;
+        let payload = [];
+        
+        questions.forEach((q, k) => {
+            totalQuestion = q.totalQuestions + totalQuestion;
+            totalAnswered = q.totalAnswered + totalAnswered;
+            q.forEach((data, i) => {
+                if(data.answerId) payload.push(data.answerId);
+            })
+        });
+
+        if(totalQuestion == totalAnswered) {
+            axios.post('http://localhost:4000/answer', {
+                data : payload,
+                applicantId : this.state.user.applicant_id,
+                selectedTime: moment().format('YYYY-MM-DD H:m:s')
+            }).then(() => {
+                window.location.reload();
+            })
+        }
     }
 
     setAnswer(aId, qId, tId) {
+        axios.post('http://localhost:4000/answer-history', {
+            answer_id : aId,
+            applicant_program_id : this.state.user.applicant_program_id,
+            selected_time: moment().format('YYYY-MM-DD H:m:s')
+        }).then(() => {
+            var a = this.state.questions;
 
-        var a = this.state.questions;
-
-        if(!a[tId][qId].isAnswered) {
-            a[tId][qId].isAnswered = true;
-            a[tId].totalAnswered = a[tId].totalAnswered + 1;
-            this.setState({questions: a});
-        }
-
-
-        // axios.post('http://localhost:4000/answer', {
-        //     answer_id : aId,
-        //     applicant_program_id : this.state.user.applicant_program_id,
-        //     selected_time: moment().format('YYYY-MM-DD H:m:s')
-        // }).then(() => {
-        //     var a = this.state.questions;
-
-        //     if(!a[tId][qId].isAnswered) {
-        //         a[tId][qId].isAnswered = true;
-        //         a[tId].totalAnswered = a[tId].totalAnswered + 1;
-        //         this.setState({questions: a});
-        //     }
-            
-        //     console.log('====> programId: ' + getCookies('PROG-ID') + ' answerId: ' + aId + ' Selected')
-        // })
+            if(!a[tId][qId].answerId) {
+                a[tId][qId].answerId = aId;
+                a[tId].totalAnswered = a[tId].totalAnswered + 1;
+                this.setState({questions: a});
+            }
+            console.log('====> programId: ' + getCookies('PROG-ID') + ' answerId: ' + aId + ' Selected')
+        })
     }
 
     startTimer(duration) {
@@ -140,6 +142,10 @@ class Tutorial extends Component {
         if(catchLog) {
             axios.get(`http://localhost:4000/user/${catchLog.u}`).then(res => {
                 if(res.data) this.setState({user: res.data, isLoading: false})
+
+                if(!res.data.photo) {
+                    window.location = 'before-start';
+                }
             })
 
             axios.get(`http://localhost:4000/question/${getCookies('PROG-ID')}`).then((res) => {
@@ -150,7 +156,7 @@ class Tutorial extends Component {
                         d.totalAnswered = 0;
                         
                         d.forEach((d2) => {
-                            d2.isAnswered = null;
+                            d2.answerId = null;
                             if(d2.answer.length) totalQuestions[idx] = totalQuestions[idx] ? totalQuestions[idx] + 1 : 1;
                         });
 
@@ -244,7 +250,7 @@ class Tutorial extends Component {
                                                                                 this.state.questions.map((tab, idx) => {
                                                                                     return (
                                                                                         <li key={idx} className="nav-item">
-                                                                                            <a onClick={this.setActive.bind(this, idx)} className={`nav-link ${this.state.activeQuestion == idx ? 'active' : ''}`} data-toggle="tab" href={`#questions-${idx}`} role="tab">
+                                                                                            <a onClick={this.setPage.bind(this, idx + 1)} className={`nav-link ${this.state.page == (idx + 1) ? 'active' : ''}`} data-toggle="tab" href={`#questions-${idx}`} role="tab">
                                                                                                 {idx * 10 + 1} - {(idx + 1) * 10}
                                                                                                 {this.state.submitted && tab.totalQuestions != tab.totalAnswered ? (<label className="badge badge-danger" style={{marginBottom:'0px'}}>!</label>) : null}
                                                                                             </a>
@@ -259,7 +265,7 @@ class Tutorial extends Component {
                                                                                 this.state.questions.map((tab, tIdx) => {
 
                                                                                     return (
-                                                                                        <div key={tIdx} className={`tab-pane ${this.state.activeQuestion == tIdx ? 'active' : ''}`} id={`questions-${tIdx}`} role="tabpanel">
+                                                                                        <div key={tIdx} className={`tab-pane ${this.state.page == (tIdx + 1) ? 'active' : ''}`} id={`questions-${tIdx+1}`} role="tabpanel">
                                                                                             <div className="table-responsive">
                                                                                                 <table className="table table-hover">
                                                                                                     <thead>
@@ -274,7 +280,7 @@ class Tutorial extends Component {
                                                                                                     {
                                                                                                         tab.map((res, qIdx) => {
                                                                                                             return (
-                                                                                                                <tr key={qIdx} style={!res.isAnswered && this.state.submitted ? {backgroundColor: '#f2dede'} : {backgroundColor: 'white'}}>
+                                                                                                                <tr key={qIdx} style={!res.answerId && this.state.submitted ? {backgroundColor: '#f2dede'} : {backgroundColor: 'white'}}>
                                                                                                                     <th scope="row">{qIdx+1}</th> 
                                                                                                                     <td style={{whiteSpace:'normal'}}>  
                                                                                                                         <p>{res.question_detail}</p> 
@@ -309,7 +315,7 @@ class Tutorial extends Component {
                                                                                 this.state.questions.map((tab, idx) => {
                                                                                     return (
                                                                                         <li key={idx} className="nav-item">
-                                                                                            <a onClick={this.setActive.bind(this, idx)} className={`nav-link ${this.state.activeQuestion == idx ? 'active' : ''}`} data-toggle="tab" href={`#questions-${idx}`} role="tab">
+                                                                                            <a onClick={this.setPage.bind(this, idx + 1)} className={`nav-link ${this.state.page == (idx + 1) ? 'active' : ''}`} data-toggle="tab" href={`#questions-${idx+1}`} role="tab">
                                                                                                 {idx * 10 + 1} - {(idx + 1) * 10}
                                                                                                 {this.state.submitted && tab.totalQuestions != tab.totalAnswered ? (<label className="badge badge-danger" style={{marginBottom:'0px'}}>!</label>) : null}
                                                                                             </a>

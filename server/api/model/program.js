@@ -1,4 +1,5 @@
 var db = require('../../db');
+
 var Program = {
     getAllProgram: function(callback) {  
         return db.query(`Select 
@@ -26,8 +27,11 @@ var Program = {
         	where ta.question_id in (${questionId})
         `, callback);  
     },
+    answerHistory : function (data, callback) {
+        return  db.query("Insert into tanswerhistory (answer_id, applicant_program_id, selected_time) values(?,?,?)", [data.answer_id, data.applicant_program_id, data.selected_time], callback);
+    },
     answer : function (data, callback) {
-    	return  db.query("Insert into tanswerhistory (answer_id, applicant_program_id, selected_time) values(?,?,?)", [data.answer_id, data.applicant_program_id, data.selected_time], callback);
+    	return  db.query("Insert into tappllicantanswer (answer_id, applicant_id, selected_time) values ?", [data], callback);
     }
 };  
 module.exports = Program; 
