@@ -62,7 +62,7 @@ class Tutorial extends Component {
         });
 
         if(totalQuestion == totalAnswered) {
-            axios.post('http://localhost:4000/answer', {
+            axios.post('http://0.0.0.0:4000/answer', {
                 data : payload,
                 applicantId : this.state.user.applicant_id,
                 selectedTime: moment().format('YYYY-MM-DD H:m:s')
@@ -73,7 +73,7 @@ class Tutorial extends Component {
     }
 
     setAnswer(aId, qId, tId) {
-        axios.post('http://localhost:4000/answer-history', {
+        axios.post('http://0.0.0.0:4000/answer-history', {
             answer_id : aId,
             applicant_program_id : this.state.user.applicant_program_id,
             selected_time: moment().format('YYYY-MM-DD H:m:s')
@@ -140,7 +140,7 @@ class Tutorial extends Component {
     componentDidMount () {
         let catchLog = JSON.parse(decodeURIComponent(getCookies('PDCLOGID')));
         if(catchLog) {
-            axios.get(`http://localhost:4000/user/${catchLog.u}`).then(res => {
+            axios.get(`http://0.0.0.0:4000/user/${catchLog.u}`).then(res => {
                 if(res.data) this.setState({user: res.data, isLoading: false})
 
                 if(!res.data.photo) {
@@ -148,7 +148,7 @@ class Tutorial extends Component {
                 }
             })
 
-            axios.get(`http://localhost:4000/question/${getCookies('PROG-ID')}`).then((res) => {
+            axios.get(`http://0.0.0.0:4000/question/${getCookies('PROG-ID')}`).then((res) => {
                 if(res.data) {
                     let questions = this.chunkArray(res.data, 10);
                     let totalQuestions = [];
