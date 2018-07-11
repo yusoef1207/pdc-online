@@ -17,7 +17,7 @@ class Login extends Component {
 
 	authenticate () {
 		if($('[name="email"]').val() && $('[name="password"]').val()) {
-			const url = `http://localhost:4000/login`;
+			const url = `http://0.0.0.0:4000/login`;
 			axios.post(url, {
 				email: $('[name="email"]').val(),
 				password: $('[name="password"]').val()
