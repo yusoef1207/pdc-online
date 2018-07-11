@@ -53,6 +53,6 @@ app.prepare()
 
     server.listen(port, (err) => {
       if (err) throw err
-      console.log(`> Ready on http://0.0.0.0:${port}`)
+      console.log(`> Ready on http://178.128.26.210:${port}`)
     })
   })

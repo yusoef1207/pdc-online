@@ -27,7 +27,7 @@ class Start extends Component {
 	componentDidMount () {
 		this.logCookie = JSON.parse(decodeURIComponent(getCookies('PDCLOGID')))
 		if(this.logCookie) {
-			axios.get(`http://0.0.0.0:4000/user/${this.logCookie.u}`).then(res => {
+			axios.get(`http://178.128.26.210:4000/user/${this.logCookie.u}`).then(res => {
 				if(res.data) this.setState({user: res.data, isLoading: false})
 			})
 		}else {
@@ -50,7 +50,7 @@ class Start extends Component {
 		if(img) {
 			imageUpload(img).then((res)=>{
 				if(res.data.data) {
-					axios.post(`http://0.0.0.0:4000/add_photo`, {
+					axios.post(`http://178.128.26.210:4000/add_photo`, {
 						applicant_id: this.state.user.applicant_id,
 						client_id: this.state.user.client_id,
 						login_time: this.logCookie.t,

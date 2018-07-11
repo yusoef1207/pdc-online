@@ -18,12 +18,12 @@ class Dashboard extends Component {
 
 	componentDidMount () {
 		if(getCookies('PDCLOGID')) {
-			axios.get('http://0.0.0.0:4000/program').then((res) => {
+			axios.get('http://178.128.26.210:4000/program').then((res) => {
 				if(res.data) this.setState({program: res.data})
 			})
 			var catchLog = JSON.parse(decodeURIComponent(getCookies('PDCLOGID')));
 
-			axios.get(`http://0.0.0.0:4000/user/${catchLog.u}`).then(res => {
+			axios.get(`http://178.128.26.210:4000/user/${catchLog.u}`).then(res => {
 				if(res.data) this.setState({user: res.data, isLoading: false})
 			})
 		}else {
