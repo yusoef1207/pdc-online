@@ -3,4 +3,4 @@ RUN mkdir /app
 WORKDIR /app
 ADD . /app
 RUN npm install
-CMD npm run front && npm run dev
+CMD ["bash"]
