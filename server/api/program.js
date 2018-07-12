@@ -26,6 +26,7 @@ router.post('/answer', function(req, res, next) {
 	if(req.body && req.body.data.length) {
 		let data = req.body.data;
 		let applicantId = req.body.applicantId;
+		let applicantProgramId = req.body.applicantProgramId;
 		let selectedTime = req.body.selectedTime;
 		let values = [];
 
@@ -34,7 +35,8 @@ router.post('/answer', function(req, res, next) {
 				values.push([
 					answer, 
 					applicantId, 
-					selectedTime
+					selectedTime,
+					applicantProgramId
 				]); 
 			}
 		})

@@ -2,7 +2,7 @@ import LoadComponent from '../components/loader';
 import HeaderComponent from '../components/header';
 import NavComponent from '../components/nav';
 import axios from 'axios';
-import {getCookies} from "../utils/cookies";
+import {getCookies, setCookies, removeCookie} from "../utils/cookies";
 import {playBeep} from "../utils/sound";
 import objectAssign from 'object-assign';
 
@@ -24,7 +24,59 @@ class Tutorial extends Component {
             notify: 0,
             submitted: false,
             page: 1,
-            activeTutorial: null
+            activeTutorial: null,
+            drafts: {}
+        }
+    }
+
+    componentDidMount () {
+        let catchLog = JSON.parse(decodeURIComponent(getCookies('PDCLOGID')));
+        if(catchLog) {
+            axios.get(`http://178.128.26.210:4000/user/${catchLog.u}`).then(res => {
+                if(res.data) this.setState({user: res.data, isLoading: false})
+
+                if(!res.data.photo) {
+                    window.location = 'before-start';
+                }
+
+                if(!res.data.is_tutorial_viewed) {
+                    this.setState({activeTutorial: 1});
+                }
+            })
+
+            let drafts = getCookies('answer-draft') ? JSON.parse(getCookies('answer-draft')) : {};
+
+            this.setState({drafts: drafts});
+
+            axios.get(`http://178.128.26.210:4000/question/${getCookies('PROG-ID')}`).then((res) => {
+                if(res.data) {
+                    let questions = this.chunkArray(res.data, 10);
+                    let totalQuestions = [];
+                    questions.forEach((d, idx) => {
+                        questions[idx].answered = [];
+                        d.forEach((d2, idx2) => {
+                            questions[idx][idx2].answerId = null;
+
+                            if(drafts[d2.question_id]) {
+                                questions[idx].answered.push(d2.question_id);
+                                questions[idx][idx2].answerId = drafts[d2.question_id] || null;
+                            }
+
+                            if(d2.answer.length) totalQuestions[idx] = totalQuestions[idx] ? totalQuestions[idx] + 1 : 1;
+                        });
+
+                        questions[idx].totalQuestions = totalQuestions[idx] ? totalQuestions[idx] : 0;
+
+                    })
+
+                    this.setState({questions: questions})
+
+                    // this.startTimer(this.countDownTime)
+                }
+            });
+
+        }else {
+            window.location.pathname = '/';
         }
     }
 
@@ -76,30 +128,52 @@ class Tutorial extends Component {
     submitAnswer () {
         this.setState({submitted: true})
 
-        let questions = this.state.questions;
+        let {questions, drafts} = this.state;
         let totalAnswered = 0; let totalQuestion = 0;
         let payload = [];
         
+// console.log("drafts", drafts);
         questions.forEach((q, k) => {
             totalQuestion = q.totalQuestions + totalQuestion;
-            totalAnswered = q.totalAnswered + totalAnswered;
             q.forEach((data, i) => {
-                if(data.answerId) payload.push(data.answerId);
+                if(data.answer.length) {
+                    if(drafts[data.question_id]) payload.push(drafts[data.question_id]);
+                    else console.log(data);
+                }
             })
         });
 
-        if(totalQuestion == totalAnswered) {
+console.log("questions", questions);
+
+console.log("Object.keys(drafts).length", Object.keys(drafts).length);
+
+console.log("totalQuestion", totalQuestion);
+
+console.log("payload", payload);
+        if(totalQuestion == payload.length) {
             axios.post('http://178.128.26.210:4000/answer', {
                 data : payload,
                 applicantId : this.state.user.applicant_id,
+                applicantProgramId : this.state.user.applicant_program_id,
                 selectedTime: moment().format('YYYY-MM-DD H:m:s')
             }).then(() => {
                 window.location.reload();
+                removeCookie('answer-draft');
             })
         }
     }
 
-    setAnswer(aId, qId, tId) {
+    setAnswer(aId, qId, qIdx, tId) {
+        var drafts = this.state.drafts;
+        drafts[qId] = aId;
+        // drafts.push(draft);
+
+        this.setState({drafts : drafts});
+
+        // console.log('this.state.draft', this.state.drafts);
+
+        setCookies('answer-draft', JSON.stringify(this.state.drafts));
+
         axios.post('http://178.128.26.210:4000/answer-history', {
             answer_id : aId,
             applicant_program_id : this.state.user.applicant_program_id,
@@ -107,9 +181,9 @@ class Tutorial extends Component {
         }).then(() => {
             var a = this.state.questions;
 
-            if(!a[tId][qId].answerId) {
-                a[tId][qId].answerId = aId;
-                a[tId].totalAnswered = a[tId].totalAnswered + 1;
+            if(!a[tId][qIdx].answerId) {
+                a[tId][qIdx].answerId = aId;
+                a[tId].answered.push(qId)
                 this.setState({questions: a});
             }
             console.log('====> programId: ' + getCookies('PROG-ID') + ' answerId: ' + aId + ' Selected')
@@ -165,49 +239,8 @@ class Tutorial extends Component {
         return tempArray;
     }
 
-    componentDidMount () {
-        let catchLog = JSON.parse(decodeURIComponent(getCookies('PDCLOGID')));
-        if(catchLog) {
-            axios.get(`http://178.128.26.210:4000/user/${catchLog.u}`).then(res => {
-                if(res.data) this.setState({user: res.data, isLoading: false})
-
-                if(!res.data.photo) {
-                    window.location = 'before-start';
-                }
-
-                if(!res.data.is_tutorial_viewed) {
-                    this.setState({activeTutorial: 1});
-                }
-            })
-
-            axios.get(`http://178.128.26.210:4000/question/${getCookies('PROG-ID')}`).then((res) => {
-                if(res.data) {
-                    let questions = this.chunkArray(res.data, 10);
-                    let totalQuestions = [];
-                    questions.forEach((d, idx) => {
-                        d.totalAnswered = 0;
-                        
-                        d.forEach((d2) => {
-                            d2.answerId = null;
-                            if(d2.answer.length) totalQuestions[idx] = totalQuestions[idx] ? totalQuestions[idx] + 1 : 1;
-                        });
-
-                        d.totalQuestions = totalQuestions[idx] ? totalQuestions[idx] : 0;
-
-                    })
-
-                    this.setState({questions: questions})
-
-                    this.startTimer(this.countDownTime)
-                }
-            });
-        }else {
-            window.location.pathname = '/';
-        }
-    }
-
     render () {
-        const {user, isLoading} = this.state;
+        const {user, isLoading, drafts} = this.state;
 
         return (
             <div>
@@ -355,7 +388,7 @@ class Tutorial extends Component {
                                                                                         <li key={idx} className="nav-item">
                                                                                             <a onClick={this.setPage.bind(this, idx + 1)} className={`nav-link ${this.state.page == (idx + 1) ? 'active' : ''}`} data-toggle="tab" href={`#questions-${idx}`} role="tab">
                                                                                                 {idx * 10 + 1} - {(idx + 1) * 10}
-                                                                                                {this.state.submitted && tab.totalQuestions != tab.totalAnswered ? (<label className="badge badge-danger" style={{marginBottom:'0px'}}>!</label>) : null}
+                                                                                                {this.state.submitted && tab.answered.length != tab.totalQuestions ? (<label className="badge badge-danger" style={{marginBottom:'0px'}}>!</label>) : null}
                                                                                             </a>
                                                                                         </li>
                                                                                     );
@@ -382,7 +415,7 @@ class Tutorial extends Component {
                                                                                                     {
                                                                                                         tab.map((res, qIdx) => {
                                                                                                             return (
-                                                                                                                <tr key={qIdx} style={!res.answerId && this.state.submitted ? {backgroundColor: '#f2dede'} : {backgroundColor: 'white'}}>
+                                                                                                                <tr key={'tr-'+qIdx} style={!drafts[res.question_id] && this.state.submitted ? {backgroundColor: '#f2dede'} : {backgroundColor: 'white'}}>
                                                                                                                     <th scope="row">{qIdx+1}</th> 
                                                                                                                     <td style={{whiteSpace:'normal'}}>  
                                                                                                                         <p>{res.question_detail}</p> 
@@ -406,9 +439,16 @@ class Tutorial extends Component {
                                                                                                                          
                                                                                                                         {
                                                                                                                             res.answer.map((ans, aIdx)=>{
+
                                                                                                                                 return (
-                                                                                                                                    <div style={{display: 'inline-block'}} key={aIdx}>
-                                                                                                                                        <input onClick={this.setAnswer.bind(this, ans.answer_id, qIdx, tIdx)} name={`answer-${qIdx}`} style={{marginTop: '4px'}} type="radio"/>
+                                                                                                                                    <div style={{display: 'inline-block'}} key={'q-'+aIdx}>
+                                                                                                                                        <input 
+                                                                                                                                            defaultChecked={drafts[res.question_id] === ans.answer_id} 
+                                                                                                                                            onChange={this.setAnswer.bind(this, ans.answer_id, res.question_id, qIdx, tIdx)} 
+                                                                                                                                            name={`answer-${res.question_id}`} 
+                                                                                                                                            style={{marginTop: '4px'}} 
+                                                                                                                                            type="radio"
+                                                                                                                                        />
                                                                                                                                         <label style={{margin: '0 5px 0px 5px'}}>{ans.answer_detail}</label>
                                                                                                                                     </div>
                                                                                                                                 );
@@ -435,7 +475,7 @@ class Tutorial extends Component {
                                                                                         <li key={idx} className="nav-item">
                                                                                             <a onClick={this.setPage.bind(this, idx + 1)} className={`nav-link ${this.state.page == (idx + 1) ? 'active' : ''}`} data-toggle="tab" href={`#questions-${idx+1}`} role="tab">
                                                                                                 {idx * 10 + 1} - {(idx + 1) * 10}
-                                                                                                {this.state.submitted && tab.totalQuestions != tab.totalAnswered ? (<label className="badge badge-danger" style={{marginBottom:'0px'}}>!</label>) : null}
+                                                                                                {this.state.submitted && tab.answered.length != tab.totalQuestions ? (<label className="badge badge-danger" style={{marginBottom:'0px'}}>!</label>) : null}
                                                                                             </a>
                                                                                         </li>
                                                                                     );

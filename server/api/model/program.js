@@ -31,7 +31,7 @@ var Program = {
         return  db.query("Insert into tanswerhistory (answer_id, applicant_program_id, selected_time) values(?,?,?)", [data.answer_id, data.applicant_program_id, data.selected_time], callback);
     },
     answer : function (data, callback) {
-    	return  db.query("Insert into tappllicantanswer (answer_id, applicant_id, selected_time) values ?", [data], callback);
+    	return  db.query("Insert into tappllicantanswer (answer_id, applicant_id, selected_time, applicant_program_id) values ?", [data], callback);
     }
 };  
 module.exports = Program; 
