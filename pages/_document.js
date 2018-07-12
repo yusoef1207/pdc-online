@@ -12,6 +12,7 @@ export default class MyDocument extends Document {
           <link rel="stylesheet" href="/static/plugins/bootstrap/dist/css/bootstrap.min.css" />
           <link rel="stylesheet" href="/static/icon/icofont/css/icofont.css" />
           <link rel="stylesheet" href="/static/css/style.css" />
+          <link rel="stylesheet" href="/static/css/tutorial_badge.css" />
 
 
           <link rel="stylesheet" type="text/css" href="/static/icon/themify-icons/themify-icons.css" />
