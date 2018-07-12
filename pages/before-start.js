@@ -56,7 +56,7 @@ class Start extends Component {
 						login_time: this.logCookie.t,
 						photo: res.data.data.link
 					}).then((res) => {
-						if(res.data) {
+						if(res.status == 200) {
 							window.location.pathname = '/tutorial';
 						}
 					});

@@ -23,8 +23,36 @@ class Tutorial extends Component {
             timer: null,
             notify: 0,
             submitted: false,
-            page: 1
+            page: 1,
+            activeTutorial: null
         }
+    }
+
+    nextTutorial () {
+        let activeTutorial = this.state.activeTutorial + 1
+
+        this.setState({activeTutorial: activeTutorial})
+
+        setTimeout(() => {
+            var scrollTo = $('.tutorial-'+activeTutorial);
+            if(scrollTo) {
+                $('html, body').animate({
+                    scrollTop: ($(scrollTo).offset().top) - 100
+                },500);
+            }
+        }, 100)
+    }
+
+    gotIt () {
+        axios.post('http://178.128.26.210:4000/set_tutorial_active', {
+            applicant_id : this.state.user.applicant_id,
+            status: 1,
+            date: moment().format('YYYY-MM-DD H:m:s')
+        }).then((res) => {
+            if(res.status == 200) {
+                this.setState({activeTutorial: null})
+            }
+        })
     }
 
     setPage (qId) {
@@ -39,7 +67,6 @@ class Tutorial extends Component {
     }
 
     prevPage () {
-
         let page = this.state.page;
         let prev = page == 0 ? 0 : page -1;
 
@@ -96,7 +123,8 @@ class Tutorial extends Component {
             diff,
             minutes,
             seconds;
-       var x = setInterval(() => {
+
+        var x = setInterval(() => {
             diff = duration - (((Date.now() - start) / 1000) | 0);
 
             minutes = (diff / 60) | 0;
@@ -146,6 +174,10 @@ class Tutorial extends Component {
                 if(!res.data.photo) {
                     window.location = 'before-start';
                 }
+
+                if(!res.data.is_tutorial_viewed) {
+                    this.setState({activeTutorial: 1});
+                }
             })
 
             axios.get(`http://178.128.26.210:4000/question/${getCookies('PROG-ID')}`).then((res) => {
@@ -179,7 +211,6 @@ class Tutorial extends Component {
 
         return (
             <div>
-
                 <LoadComponent />
                 <div id="pcoded" className="pcoded">
                     <HeaderComponent user={user} />
@@ -209,54 +240,60 @@ class Tutorial extends Component {
                                             </div>
                                             <div className="page-body">
                                                 <div className="row" style={{ marginBottom:'20px'}}>
-                                                    
-                                                    <div className="tutorial tutorial-1">
-                                                        <span className="tooltip-content-1" style={{color:"white", display:'block',background: '#2b2b2b',padding: '15px'}}>
-                                                            <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
-                                                                <label className="badge badge-warning">Tutorial 1</label><br></br>
-                                                                Tes terdiri dari beberapa halaman, 
-                                                                dan setiap halaman terdiri dari 10 soal. 
-                                                                Peserta harus menjawab semua soal yang diberikan sesuai waktu yang telah ditetapkan
-                                                                <br></br><label className="badge badge-success">Selanjutnya ></label>
-                                                            </span>
-                                                        </span>
-                                                    </div>
-
-                                                    <div className="tutorial tutorial-5">
-                                                        <span className="tooltip-content-1" style={{color:"white", display:'block',background: '#2b2b2b',padding: '15px'}}>
-                                                            <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
-                                                                <label className="badge badge-warning">Tutorial 5</label><br></br>
-                                                                Lanjutkan mengisi jawaban sampai halaman terahkir dari soal
-                                                                <br></br><label className="badge badge-success">Selanjutnya ></label>
-                                                            </span>
-                                                        </span>
-                                                    </div>
-
-                                                    <div className="tutorial tutorial-7">
-                                                        <span className="tooltip-content-1" style={{color:"white", display:'block',background: '#2b2b2b',padding: '15px'}}>
-                                                            <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
-                                                                <label className="badge badge-warning">Tutorial 7</label><br></br>
-                                                                System akan memberikan warning pada "tab" berwarna merah. Bila ada soal yang belum dijawab pada tab tersebut. Anda dapat klik pada "tab" halaman dan melihat soal yang masih merah (Belum dijawab)
-                                                                <br></br><label className="badge badge-success">Selanjutnya ></label>
-                                                            </span>
-                                                        </span>
-                                                    </div>
-
-                                                    <div className="tutorial tutorial-8">
-                                                        <span className="tooltip-content-1" style={{color:"white", display:'block',background: '#2b2b2b',padding: '15px'}}>
-                                                            <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
-                                                                <label className="badge badge-warning">Tutorial 8</label><br></br>
-                                                                    Bila telah dijawab, anda dapat langsung ke "tab" terahkir untuk mengklik "Selesai" sekali lagi.
-                                                                <br></br><label className="badge badge-success">Saya mengerti </label>
-                                                            </span>
-                                                        </span>
-                                                    </div>
-
+                                                    {(() => {
+                                                        if (this.state.activeTutorial == 1) {
+                                                            return (
+                                                                <div className="tutorial tutorial-1">
+                                                                    <span className="tooltip-content-1" style={{color:"white", display:'block',background: '#2b2b2b',padding: '15px'}}>
+                                                                        <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
+                                                                            <label className="badge badge-warning">Tutorial 1</label><br></br>
+                                                                            Tes terdiri dari beberapa halaman, 
+                                                                            dan setiap halaman terdiri dari 10 soal. 
+                                                                            Peserta harus menjawab semua soal yang diberikan sesuai waktu yang telah ditetapkan
+                                                                            <br></br><label className="badge badge-success" onClick={this.nextTutorial.bind(this)}>Selanjutnya ></label>
+                                                                        </span>
+                                                                    </span>
+                                                                </div>
+                                                            );
+                                                        } else if (this.state.activeTutorial == 5) {
+                                                            return (
+                                                                <div className="tutorial tutorial-5">
+                                                                    <span className="tooltip-content-1" style={{color:"white", display:'block',background: '#2b2b2b',padding: '15px'}}>
+                                                                        <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
+                                                                            <label className="badge badge-warning">Tutorial 5</label><br></br>
+                                                                            Lanjutkan mengisi jawaban sampai halaman terahkir dari soal
+                                                                            <br></br><label className="badge badge-success" onClick={this.nextTutorial.bind(this)}>Selanjutnya ></label>
+                                                                        </span>
+                                                                    </span>
+                                                                </div>
+                                                            );
+                                                        } else if (this.state.activeTutorial == 7) {
+                                                            return (
+                                                                <div className="tutorial tutorial-7">
+                                                                    <span className="tooltip-content-1" style={{color:"white", display:'block',background: '#2b2b2b',padding: '15px'}}>
+                                                                        <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
+                                                                            <label className="badge badge-warning">Tutorial 7</label><br></br>
+                                                                            System akan memberikan warning pada "tab" berwarna merah. Bila ada soal yang belum dijawab pada tab tersebut. Anda dapat klik pada "tab" halaman dan melihat soal yang masih merah (Belum dijawab)
+                                                                            <br></br><label className="badge badge-success" onClick={this.nextTutorial.bind(this)}>Selanjutnya ></label>
+                                                                        </span>
+                                                                    </span>
+                                                                </div>
+                                                            );
+                                                        } else if (this.state.activeTutorial == 8) {
+                                                            return (
+                                                                <div className="tutorial tutorial-8">
+                                                                    <span className="tooltip-content-1" style={{color:"white", display:'block',background: '#2b2b2b',padding: '15px'}}>
+                                                                        <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
+                                                                            <label className="badge badge-warning">Tutorial 8</label><br></br>
+                                                                                Bila telah dijawab, anda dapat langsung ke "tab" terahkir untuk mengklik "Selesai" sekali lagi.
+                                                                            <br></br><label className="badge badge-success" onClick={this.gotIt.bind(this)}>Saya mengerti </label>
+                                                                        </span>
+                                                                    </span>
+                                                                </div>
+                                                            );
+                                                        }
+                                                    })()}
                                                 </div>
-
-                                                    
-
-                                                    
 
                                                 <div className="row">
                                                     <div className="col-sm-12">
@@ -264,18 +301,23 @@ class Tutorial extends Component {
                                                             <div className="card-header">
                                                                 <h5 style={{textTransform:'none'}}>Pilih jawaban anda dengan klik salah satu skala angka 0-4</h5>
                                                                 
-                                                                <div className="tutorial tutorial-3">
-                                                                    <span className="tooltip-content">
-                                                                        <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
-                                                                            <label className="badge badge-warning">Tutorial 3</label><br></br>
-                                                                            Jawaban anda akan terekam disebelah kiri layar, lanjutkan mengisi jawaban pada halaman terserbut.
-                                                                            Pastikan mengerjakan soal yang menurut anda lebih mudah terlebih dahulu.<br></br>
-                                                                            
-                                                                            <br></br><label className="badge badge-success">Selanjutnya ></label>
-                                                                        </span>
-                                                                    </span>
-                                                                </div>
-
+                                                                {
+                                                                    this.state.activeTutorial == 3 ?
+                                                                    (
+                                                                        <div className="tutorial tutorial-3">
+                                                                            <span className="tooltip-content">
+                                                                                <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
+                                                                                    <label className="badge badge-warning">Tutorial 3</label><br></br>
+                                                                                    Jawaban anda akan terekam disebelah kiri layar, lanjutkan mengisi jawaban pada halaman terserbut.
+                                                                                    Pastikan mengerjakan soal yang menurut anda lebih mudah terlebih dahulu.<br></br>
+                                                                                    
+                                                                                    <br></br><label className="badge badge-success" onClick={this.nextTutorial.bind(this)}>Selanjutnya ></label>
+                                                                                </span>
+                                                                            </span>
+                                                                        </div>
+                                                                    ) : null
+                                                                }
+                                                               
                                                                 <span>
                                                                     <div style={{margin: '0px', fontSize: '14px'}} className="label-main">
                                                                             <label className="label label-info">0 = Sangat tidak setuju</label>
@@ -307,7 +349,6 @@ class Tutorial extends Component {
                                                                                 </span>
                                                                         </div>                                        
                                                                         <ul className="nav nav-tabs tabs" role="tablist" style={{overflowY:'hidden'}}>
-                                                                            
                                                                             {
                                                                                 this.state.questions.map((tab, idx) => {
                                                                                     return (
@@ -320,7 +361,6 @@ class Tutorial extends Component {
                                                                                     );
                                                                                 })
                                                                             }
-                                                                            
                                                                         </ul>
                                                                         <div className="tab-content tabs card-block">
                                                                             {
@@ -348,16 +388,22 @@ class Tutorial extends Component {
                                                                                                                         <p>{res.question_detail}</p> 
                                                                                                                     </td>
                                                                                                                     <td>
-                                                                                                                        <div className="tutorial tutorial-2">
-                                                                                                                            <span className="tooltip-content">
-                                                                                                                                <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
-                                                                                                                                    <label className="badge badge-warning">Tutorial 2</label><br></br>
-                                                                                                                                    Pilih jawaban anda dengan klik salah satu skala angka 0 - 4<br></br>
-                                                                                                                                    ( 0 = Sangat tidak setuju | 1 = Tidak setuju | 2 = Ragu-ragu | 3 = Setuju | 4 =  Sangat setuju)
-                                                                                                                                    <br></br><label className="badge badge-success">Selanjutnya ></label>
-                                                                                                                                </span>
-                                                                                                                            </span>
-                                                                                                                        </div>  
+                                                                                                                        {
+                                                                                                                            this.state.activeTutorial == 2 ?
+                                                                                                                            (
+                                                                                                                                <div className="tutorial tutorial-2">
+                                                                                                                                    <span className="tooltip-content">
+                                                                                                                                        <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
+                                                                                                                                            <label className="badge badge-warning">Tutorial 2</label><br></br>
+                                                                                                                                            Pilih jawaban anda dengan klik salah satu skala angka 0 - 4<br></br>
+                                                                                                                                            ( 0 = Sangat tidak setuju | 1 = Tidak setuju | 2 = Ragu-ragu | 3 = Setuju | 4 =  Sangat setuju)
+                                                                                                                                            <br></br><label className="badge badge-success" onClick={this.nextTutorial.bind(this)}>Selanjutnya ></label>
+                                                                                                                                        </span>
+                                                                                                                                    </span>
+                                                                                                                                </div> 
+                                                                                                                            ) : null 
+                                                                                                                        }
+                                                                                                                         
                                                                                                                         {
                                                                                                                             res.answer.map((ans, aIdx)=>{
                                                                                                                                 return (
@@ -395,30 +441,37 @@ class Tutorial extends Component {
                                                                                     );
                                                                                 })
                                                                             }
-                                                                            <div className="tutorial tutorial-4">
-                                                                                <span className="tooltip-content">
-                                                                                    <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
-                                                                                        <label className="badge badge-warning">Tutorial 4</label><br></br>
-                                                                                        Pada ahkir setiap halaman, klik "Berikutnya" untuk lanjut ke halaman berikut nya<br></br>
-                                                                                        atau "Sebelumnya" untuk kembali ke halaman sebelumnya. Atau anda bisa langsung klik tab nomor
-                                                                                        yang ada di atas soal.
-                                                                                        
-                                                                                        <br></br><label className="badge badge-success">Selanjutnya ></label>
-                                                                                    </span>
-                                                                                </span>
-                                                                            </div>
 
-                                                                            <div className="tutorial tutorial-6">
-                                                                                <span className="tooltip-content-1" style={{color:"white", display:'block',background: '#2b2b2b',padding: '15px'}}>
-                                                                                    <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
-                                                                                        <label className="badge badge-warning">Tutorial 6</label><br></br>
-                                                                                        Klik "Selesai" bila seluruh soal telah dikerjakan
-                                                                                        <br></br><label className="badge badge-success">Selanjutnya ></label>
-                                                                                    </span>
-                                                                                </span>
-                                                                            </div>
-
-
+                                                                            {(() => {
+                                                                                if(this.state.activeTutorial == 4) {
+                                                                                    return (
+                                                                                        <div className="tutorial tutorial-4">
+                                                                                            <span className="tooltip-content">
+                                                                                                <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
+                                                                                                    <label className="badge badge-warning">Tutorial 4</label><br></br>
+                                                                                                    Pada ahkir setiap halaman, klik "Berikutnya" untuk lanjut ke halaman berikut nya<br></br>
+                                                                                                    atau "Sebelumnya" untuk kembali ke halaman sebelumnya. Atau anda bisa langsung klik tab nomor
+                                                                                                    yang ada di atas soal.
+                                                                                                    
+                                                                                                    <br></br><label className="badge badge-success" onClick={this.nextTutorial.bind(this)}>Selanjutnya ></label>
+                                                                                                </span>
+                                                                                            </span>
+                                                                                        </div>
+                                                                                    );
+                                                                                } else if(this.state.activeTutorial == 6) {
+                                                                                    return (
+                                                                                        <div className="tutorial tutorial-6">
+                                                                                            <span className="tooltip-content-1" style={{color:"white", display:'block',background: '#2b2b2b',padding: '15px'}}>
+                                                                                                <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
+                                                                                                    <label className="badge badge-warning">Tutorial 6</label><br></br>
+                                                                                                    Klik "Selesai" bila seluruh soal telah dikerjakan
+                                                                                                    <br></br><label className="badge badge-success" onClick={this.nextTutorial.bind(this)}>Selanjutnya ></label>
+                                                                                                </span>
+                                                                                            </span>
+                                                                                        </div>
+                                                                                    );
+                                                                                }
+                                                                            })()}
                                                                         </ul>
                                                                         <div className="row">
                                                                             <div className="col-md-6 offset-md-6" style={{textAlign:'right', fontSize:'17px'}}>
@@ -448,7 +501,6 @@ class Tutorial extends Component {
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>

@@ -34,4 +34,16 @@ router.post('/add_photo', function(req, res, next) {
     });  
 });
 
+router.post('/set_tutorial_active', function(req, res, next) { 
+    User.setTutorial(req.body, function(err, results, fields) {  
+        if (err) {  
+            res.json(err);  
+        } else {  
+            res.json(results[0]);
+        }  
+    });  
+});
+
+
+
 module.exports = router;  
