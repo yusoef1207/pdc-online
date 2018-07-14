@@ -13,7 +13,7 @@ node('pdc-server')
 
 	stage('Build Docker Image')
 	{
-		sh 'docker build -t pdc-online:develop'
+		sh 'docker build -t pdc-online:develop .'
 	}
 
 	stage('Run Docker Staging')
