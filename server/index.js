@@ -4,7 +4,8 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const logger = require('morgan');
 
-const port = parseInt(process.env.PORT, 10) || 4000
+const port = parseInt(process.env.BACKEND_PORT, 10) || 4000
+const backendUrl = process.env.BACKEND_URL || `http://localhost:${port}`
 const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
@@ -54,6 +55,6 @@ app.prepare()
 
     server.listen(port, (err) => {
       if (err) throw err
-      console.log(`> Ready on http://178.128.26.210:${port}`)
+      console.log(`> Ready on ${backendUrl}`)
     })
   })

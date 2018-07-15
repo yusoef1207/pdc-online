@@ -7,7 +7,7 @@ import moment from 'moment';
 class Login extends Component {
 	constructor (props) {
 		super(props);
-
+		this.backendUrl = process.env.BACKEND_URL;
 		this.state = {
 			email: null,
 			password: null
@@ -17,7 +17,7 @@ class Login extends Component {
 
 	authenticate () {
 		if($('[name="email"]').val() && $('[name="password"]').val()) {
-			const url = `http://178.128.26.210:4000/login`;
+			const url = `${this.backendUrl}/login`;
 			axios.post(url, {
 				email: $('[name="email"]').val(),
 				password: $('[name="password"]').val()

@@ -8,6 +8,7 @@ import React, { Component } from "react";
 class Dashboard extends Component {
 	constructor (props) {
 		super(props);
+		this.backendUrl = process.env.BACKEND_URL;
 
 		this.state = {
 			program: [],
@@ -18,12 +19,12 @@ class Dashboard extends Component {
 
 	componentDidMount () {
 		if(getCookies('PDCLOGID')) {
-			axios.get('http://178.128.26.210:4000/program').then((res) => {
+			axios.get(`${this.backendUrl}/program`).then((res) => {
 				if(res.data) this.setState({program: res.data})
 			})
 			var catchLog = JSON.parse(decodeURIComponent(getCookies('PDCLOGID')));
 
-			axios.get(`http://178.128.26.210:4000/user/${catchLog.u}`).then(res => {
+			axios.get(`${this.backendUrl}/user/${catchLog.u}`).then(res => {
 				if(res.data) this.setState({user: res.data, isLoading: false})
 			})
 		}else {

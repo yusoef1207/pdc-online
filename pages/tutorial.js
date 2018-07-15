@@ -15,6 +15,10 @@ class Tutorial extends Component {
 
         this.countDownTime = 60 * 0.1;
 
+        this.backendUrl = process.env.BACKEND_URL;
+        
+        this.baseUrl = process.env.BASE_URL;
+
         this.state = {
             program: [],
             user: {},
@@ -32,7 +36,7 @@ class Tutorial extends Component {
     componentDidMount () {
         let catchLog = JSON.parse(decodeURIComponent(getCookies('PDCLOGID')));
         if(catchLog) {
-            axios.get(`http://178.128.26.210:4000/user/${catchLog.u}`).then(res => {
+            axios.get(`${this.backendUrl}/user/${catchLog.u}`).then(res => {
                 if(res.data) this.setState({user: res.data, isLoading: false})
 
                 if(!res.data.photo) {
@@ -48,7 +52,7 @@ class Tutorial extends Component {
 
             this.setState({drafts: drafts});
 
-            axios.get(`http://178.128.26.210:4000/question/${getCookies('PROG-ID')}`).then((res) => {
+            axios.get(`${this.backendUrl}/question/${getCookies('PROG-ID')}`).then((res) => {
                 if(res.data) {
                     let questions = this.chunkArray(res.data, 10);
                     let totalQuestions = [];
@@ -96,7 +100,7 @@ class Tutorial extends Component {
     }
 
     gotIt () {
-        axios.post('http://178.128.26.210:4000/set_tutorial_active', {
+        axios.post(`${this.backendUrl}/set_tutorial_active`, {
             applicant_id : this.state.user.applicant_id,
             status: 1,
             date: moment().format('YYYY-MM-DD H:m:s')
@@ -151,7 +155,7 @@ console.log("totalQuestion", totalQuestion);
 
 console.log("payload", payload);
         if(totalQuestion == payload.length) {
-            axios.post('http://178.128.26.210:4000/answer', {
+            axios.post(`${this.backendUrl}/answer`, {
                 data : payload,
                 applicantId : this.state.user.applicant_id,
                 applicantProgramId : this.state.user.applicant_program_id,
@@ -174,7 +178,7 @@ console.log("payload", payload);
 
         setCookies('answer-draft', JSON.stringify(this.state.drafts));
 
-        axios.post('http://178.128.26.210:4000/answer-history', {
+        axios.post(`${this.backendUrl}/answer-history`, {
             answer_id : aId,
             applicant_program_id : this.state.user.applicant_program_id,
             selected_time: moment().format('YYYY-MM-DD H:m:s')
