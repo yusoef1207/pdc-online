@@ -125,7 +125,6 @@ $(document).ready(function() {
     })
         //Language chage dropdown end
         //loader start
-        $('.theme-loader').fadeOut(300);
         //loader end
 });
 

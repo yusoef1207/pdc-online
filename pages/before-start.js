@@ -59,7 +59,7 @@ class Start extends Component {
 						photo: res.data.data.link
 					}).then((res) => {
 						if(res.status == 200) {
-							window.location.pathname = '/tutorial';
+							window.location.pathname = '/questionaire';
 						}
 					});
 				}
@@ -78,7 +78,7 @@ class Start extends Component {
 
 		return (
 			<div>
-				<LoadComponent />
+				<LoadComponent hide={isLoading}/>
 				<div id="pcoded" className="pcoded">
 					<HeaderComponent user={user} />
 				

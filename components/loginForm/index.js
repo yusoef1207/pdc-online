@@ -10,13 +10,23 @@ class Login extends Component {
 		this.backendUrl = process.env.BACKEND_URL;
 		this.state = {
 			email: null,
-			password: null
+			password: null,
+			emailInvalid: false,
+			submitted: false,
+			isLoading: false
 		}
 	
 	}
 
+	fill(name) {
+		if(name == 'email') this.setState({email : $('[name="email"]').val()})
+		else this.setState({password : $('[name="password"]').val()})
+	}
+
 	authenticate () {
+		this.setState({submitted: true});
 		if($('[name="email"]').val() && $('[name="password"]').val()) {
+			this.setState({isLoading: true})
 			const url = `${this.backendUrl}/login`;
 			axios.post(url, {
 				email: $('[name="email"]').val(),
@@ -25,6 +35,8 @@ class Login extends Component {
 				if(res.data) {
 					setCookies('PDCLOGID', encodeURIComponent(JSON.stringify({u:res.data.applicant_id,t:moment().format('YYYY-MM-DD H:m:s')})));
 					window.location.pathname = '/dashboard';
+				} else {
+					this.setState({emailInvalid : true, isLoading: false});
 				}
 			});
 		}	
@@ -47,17 +59,26 @@ class Login extends Component {
 										</div>
 
 										<div className="input-group">
-											<input type="email" className="form-control" placeholder="Username" name="email"/>
+											<input type="email" onChange={this.fill.bind(this, 'email')} className={`form-control${this.state.submitted && (this.state.emailInvalid || !this.state.email) ? ' form-control-danger' : ''}`} placeholder="Username" name="email"/>
 											<span className="md-line"></span>
 										</div>
 										<div className="input-group">
-											<input type="password" className="form-control" placeholder="password" name="password" autoComplete="true"/>
+											<input type="password" onChange={this.fill.bind(this, 'password')} className={`form-control${this.state.submitted && (this.state.emailInvalid || !this.state.password) ? ' form-control-danger' : ''}`} placeholder="password" name="password" autoComplete="true"/>
 											<span className="md-line"></span>
 										</div>
 
 										<div className="row m-t-30">
 											<div className="col-md-12">
-												<a onClick={this.authenticate.bind(this)} className="btn btn-primary btn-md btn-block waves-effect text-center m-b-20">LOGIN</a>
+											{
+												this.state.isLoading ? 
+												(
+													<a className={`btn btn-default btn-md btn-block waves-effect text-center m-b-20`}>LOGIN</a>
+												) : 
+												(
+													<a onClick={this.authenticate.bind(this)} className={`btn btn-primary btn-md btn-block waves-effect text-center m-b-20`}>LOGIN</a>
+												) 
+											
+											}
 											</div>
 										</div>
 

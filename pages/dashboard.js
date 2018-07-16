@@ -42,7 +42,7 @@ class Dashboard extends Component {
 
 		return (
 			<div>
-				<LoadComponent />
+				<LoadComponent hide={isLoading}/>
 				<div id="pcoded" className="pcoded">
 					<HeaderComponent user={user} />
 				

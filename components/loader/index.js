@@ -13,7 +13,7 @@ class Loader extends Component {
 
 	render () {
 		return (
-			<div className="theme-loader">
+			<div className="theme-loader" style={{display : !this.props.hide ? 'none' : 'block' }}>
 				<div className="ball-scale">
 					<div></div>
 				</div>
