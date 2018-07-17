@@ -5,7 +5,6 @@ const cors = require('cors')
 const logger = require('morgan');
 
 const port = parseInt(process.env.BACKEND_PORT, 10) || 4000
-const backendUrl = process.env.BACKEND_URL || `http://localhost:${port}`
 const dev = process.env.NODE_ENV !== 'production'
 const app = next({ dev })
 const handle = app.getRequestHandler()
@@ -55,6 +54,6 @@ app.prepare()
 
     server.listen(port, (err) => {
       if (err) throw err
-      console.log(`> Ready on ${backendUrl}`)
+      console.log(`> Ready on ${process.env.BACKEND_URL}`)
     })
   })
