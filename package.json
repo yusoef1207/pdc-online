@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "node server",
-    "front": "next",
-    "build": "next build",
-    "start": "next start",
-    "staging": "node server"
+    "backend": "node server",
+    "backend-dev": "nodemon server",
+    "frontend": "next start",
+    "frontend-dev": "next",
+    "build": "next build"
   },
   "keywords": [],
   "author": "",
