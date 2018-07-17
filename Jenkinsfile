@@ -19,7 +19,8 @@ node('pdc-server')
 	stage('Run Docker Staging')
 	{
 		sh 'docker stop frontend-develop'
-		sh 'docker run --rm --name frontend-develop -d -p 3002:3000 pdc-online:develop npm run front'
+		sh 'docker run --rm --name frontend-develop -d -p 3002:3000 pdc-online:develop npm run frontend'
+		sh 'docker run --rm --name backend-develop -d -p 4000:4000 pdc-online:develop npm run backend'
 	}
 
 	stage('Cleanup Docker Image')

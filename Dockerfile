@@ -8,7 +8,6 @@ ADD . /app
 
 RUN cp /app/.env.develop /app/.env
 
-
 RUN cp -a /tmp/node_modules /app
 RUN npm run build
 CMD ["sh"]
