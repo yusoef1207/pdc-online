@@ -18,8 +18,9 @@ node('pdc-server')
 
 	stage('Run Docker Staging')
 	{
-		sh 'docker stop frontend-staging'
-		sh 'docker run --rm --name frontend-develop -d -p 3002:3002 pdc-online:develop npm run front'
+		sh 'docker stop frontend-develop'
+		sh 'docker stop backend-develop'
+		sh 'docker run --rm --name frontend-develop -d -p 3002:3000 pdc-online:develop npm run front'
 		sh 'docker run --rm --name backend-develop -d -p 4002:4002 pdc-online:develop npm run staging'
 	}
 
