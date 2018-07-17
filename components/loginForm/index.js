@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 // import "./style.scss";
 import {setCookies} from "../../utils/cookies";
+import {notify} from "../../utils/notification";
 import axios from 'axios';
 import moment from 'moment';
 
@@ -16,6 +17,14 @@ class Login extends Component {
 			isLoading: false
 		}
 	
+	}
+
+	componentDidMount() {
+		if(window.location.search.indexOf('email=') > -1) {
+			var email = window.location.search.replace('?email=', '');
+			$('[name="email"]').val(email);
+			this.setState({email : email});
+		}
 	}
 
 	fill(name) {
@@ -34,8 +43,9 @@ class Login extends Component {
 			}).then((res) => {
 				if(res.data) {
 					setCookies('PDCLOGID', encodeURIComponent(JSON.stringify({u:res.data.applicant_id,t:moment().format('YYYY-MM-DD H:m:s')})));
-					window.location.pathname = '/dashboard';
+					window.location.replace('/dashboard');
 				} else {
+					notify('User tidak ditemukan', 'danger');
 					this.setState({emailInvalid : true, isLoading: false});
 				}
 			});

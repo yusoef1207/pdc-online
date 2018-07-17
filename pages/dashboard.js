@@ -32,8 +32,8 @@ class Dashboard extends Component {
 		}
 	}
 
-	startQuestion (progId) {
-		setCookies('PROG-ID', progId);
+	startQuestion (program) {
+		setCookies('PROG-ID', encodeURIComponent(JSON.stringify({id:program.program_id,duration:program.duration})));
 		window.location.pathname = '/before-start';
 	}
 
@@ -76,7 +76,7 @@ class Dashboard extends Component {
 														this.state.program.map((program, idx) => {
 															return (
 																<div key={idx} className="col-md-12 col-lg-4">
-																	<a href="#" onClick={this.startQuestion.bind(this, program.program_id)}>
+																	<a href="#" onClick={this.startQuestion.bind(this, program)}>
 																		<div className={`card table-card ${idx%2 == 0 ? 'widget-success-card' : 'widget-primary-card'}`}>
 																			<div className="row-table">
 																				<div className="col-sm-3 card-block-big">

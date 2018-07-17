@@ -63,7 +63,7 @@ class Header extends Component {
 								</ul>
 								<div className="upgrade-button m-r-10 f-right">
 									<a href="#" className="icon-circle txt-white btn btn-sm btn-warning upgrade-button">
-										<span>ID : 92131293</span>
+										<span>ID : {user.id_number}</span>
 									</a>
 								</div> 
 							</div>
