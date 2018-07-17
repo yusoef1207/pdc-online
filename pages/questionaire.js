@@ -438,7 +438,7 @@ console.log("payload", payload);
                                                                                                                     tab.map((res, qIdx) => {
                                                                                                                         return (
                                                                                                                             <tr key={'tr-'+qIdx} style={!drafts[res.question_id] && this.state.submitted ? {backgroundColor: '#f2dede'} : {backgroundColor: 'white'}}>
-                                                                                                                                <th scope="row">{qIdx+1}</th> 
+                                                                                                                                <th scope="row">{(this.state.page - 1)*10 +qIdx+1}</th> 
                                                                                                                                 <td style={{whiteSpace:'normal'}}>  
                                                                                                                                     <p>{res.question_detail}</p> 
                                                                                                                                 </td>
