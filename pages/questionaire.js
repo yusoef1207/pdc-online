@@ -399,8 +399,8 @@ console.log("payload", payload);
                                                                                 <div className="col-lg-12 col-lg-12">
                                                                                     <div className="sub-title">Waktu Test : 
                                                                                             <label style={{fontSize: '15px'}} className="badge badge-inverse-success">{this.state.timer}</label>
-                                                                                            <span style={{display:'inline-block', textAlign:'right', float:'right'}}>
-                                                                                                <label style={{fontSize: '15px'}} className="badge badge-inverse-danger">Mohon dilengkapi semua pertanyaan</label>
+                                                                                            <span className="lengkapi">
+                                                                                                <label className="badge badge-inverse-danger">Mohon dilengkapi semua pertanyaan</label>
                                                                                             </span>
                                                                                     </div>                                        
                                                                                     <ul className="nav nav-tabs tabs" role="tablist" style={{overflowY:'hidden'}}>
@@ -472,8 +472,9 @@ console.log("payload", payload);
                                                                                                                                                     />
                                                                                                                                                     <span className="label-visible"> 
                                                                                                                                                         <span className="fake-radiobutton">
-                                                                                                                                                            {ans.answer_detail}    
+                                                                                                                                                             
                                                                                                                                                         </span>
+                                                                                                                                                        {ans.answer_detail}   
                                                                                                                                                     </span>
                                                                                                                                                 </label>
                                                                                                     

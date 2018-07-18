@@ -23,12 +23,6 @@ class Header extends Component {
 					<nav className="navbar header-navbar pcoded-header" >
 						<div className="navbar-wrapper">
 							<div className="navbar-logo" data-navbar-theme="theme4">
-								<a className="mobile-menu" id="mobile-collapse" href="#!">
-									<i className="ti-menu"></i>
-								</a>
-								<a className="mobile-search morphsearch-search" href="#">
-									<i className="ti-search"></i>
-								</a>
 								<a href="#!">
 									Personality Development Center
 								</a>
