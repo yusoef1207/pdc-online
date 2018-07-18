@@ -15,8 +15,6 @@ class Tutorial extends Component {
     constructor (props) {
         super(props);
 
-        this.countDownTime = 60 * 10;
-
         this.backendUrl = process.env.BACKEND_URL;
         
         this.baseUrl = process.env.BASE_URL;
@@ -37,8 +35,9 @@ class Tutorial extends Component {
     }
 
     componentDidMount () {
-        let catchLog = JSON.parse(decodeURIComponent(getCookies('PDCLOGID')));
+        let catchLog = decodeURIComponent(getCookies('PDCLOGID'));
         if(catchLog) {
+            catchLog = JSON.parse(catchLog)
             axios.get(`${this.backendUrl}/user/${catchLog.u}`).then(res => {
                 if(res.data) this.setState({user: res.data})
 
@@ -54,34 +53,40 @@ class Tutorial extends Component {
 
                 this.setState({drafts: drafts});
 
-                axios.get(`${this.backendUrl}/question/${getCookies('PROG-ID')}`).then((res) => {
-                    if(res.data) {
-                        let questions = this.chunkArray(res.data, 10);
-                        let totalQuestions = [];
-                        questions.forEach((d, idx) => {
-                            questions[idx].answered = [];
-                            d.forEach((d2, idx2) => {
-                                questions[idx][idx2].answerId = null;
+                let program = JSON.parse(decodeURIComponent(getCookies('PROG-ID')))
 
-                                if(drafts[d2.question_id]) {
-                                    questions[idx].answered.push(d2.question_id);
-                                    questions[idx][idx2].answerId = drafts[d2.question_id] || null;
-                                }
+                if(program){
+                    axios.get(`${this.backendUrl}/question/${program.id}`).then((res) => {
+                        if(res.data) {
+                            let questions = this.chunkArray(res.data, 10);
+                            let totalQuestions = [];
+                            questions.forEach((d, idx) => {
+                                questions[idx].answered = [];
+                                d.forEach((d2, idx2) => {
+                                    questions[idx][idx2].answerId = null;
 
-                                if(d2.answer.length) totalQuestions[idx] = totalQuestions[idx] ? totalQuestions[idx] + 1 : 1;
-                            });
+                                    if(drafts[d2.question_id]) {
+                                        questions[idx].answered.push(d2.question_id);
+                                        questions[idx][idx2].answerId = drafts[d2.question_id] || null;
+                                    }
 
-                            questions[idx].totalQuestions = totalQuestions[idx] ? totalQuestions[idx] : 0;
+                                    if(d2.answer.length) totalQuestions[idx] = totalQuestions[idx] ? totalQuestions[idx] + 1 : 1;
+                                });
 
-                        })
+                                questions[idx].totalQuestions = totalQuestions[idx] ? totalQuestions[idx] : 0;
 
-                        this.setState({questions: questions, isLoading: false})
+                            })
 
-                        this.startTimer(this.countDownTime)
-                    }
-                });
+                            this.setState({questions: questions, isLoading: false})
+                            let duration = 60 * program.duration || 1;
+                            this.startTimer(duration)
+                        }
+                    });
+                } else {
+                    this.setState({isLoading: false});
+                    notify('Program not Found', 'inverse')
+                }
             })
-
         }else {
             window.location.pathname = '/';
         }
@@ -225,10 +230,13 @@ console.log("payload", payload);
                 console.log('alert notify ', timeLeft);
             }
 
-            if (diff <= 0) {
+            if (diff <= 10) {
                 playBeep();
-                console.warn('time is up!')
-                clearInterval(x);
+                
+                if(diff <= 0) {
+                    clearInterval(x); 
+                    notify('Waktu Berakhir', 'inverse');
+                }
             }
         }, 1000);
     }
@@ -430,7 +438,7 @@ console.log("payload", payload);
                                                                                                                     tab.map((res, qIdx) => {
                                                                                                                         return (
                                                                                                                             <tr key={'tr-'+qIdx} style={!drafts[res.question_id] && this.state.submitted ? {backgroundColor: '#f2dede'} : {backgroundColor: 'white'}}>
-                                                                                                                                <th scope="row">{qIdx+1}</th> 
+                                                                                                                                <th scope="row">{(this.state.page - 1)*10 +qIdx+1}</th> 
                                                                                                                                 <td style={{whiteSpace:'normal'}}>  
                                                                                                                                     <p>{res.question_detail}</p> 
                                                                                                                                 </td>

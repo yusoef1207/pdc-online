@@ -50,6 +50,7 @@ class Start extends Component {
 		var img = this.state.screenshot.split('base64,')[1];
 
 		if(img) {
+			this.setState({isLoading: true})
 			imageUpload(img).then((res)=>{
 				if(res.data.data) {
 					axios.post(`${this.backendUrl}/add_photo`, {
