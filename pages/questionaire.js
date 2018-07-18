@@ -455,19 +455,23 @@ console.log("payload", payload);
                                                                                                                                         res.answer.map((ans, aIdx)=>{
 
                                                                                                                                             return (
-                                                                                                                                                <div style={{display: 'inline-block'}} key={'q-'+aIdx}>
+                                                                                                                                                <label className="radio-button">
                                                                                                                                                     <input 
                                                                                                                                                         defaultChecked={drafts[res.question_id] === ans.answer_id} 
                                                                                                                                                         onChange={this.setAnswer.bind(this, ans.answer_id, res.question_id, qIdx, tIdx)} 
                                                                                                                                                         name={`answer-${res.question_id}`} 
-                                                                                                                                                        style={{marginTop: '4px'}} 
                                                                                                                                                         type="radio"
                                                                                                                                                     />
-                                                                                                                                                    <label style={{margin: '0 5px 0px 5px'}}>{ans.answer_detail}</label>
-                                                                                                                                                </div>
+                                                                                                                                                    <span className="label-visible"> 
+                                                                                                                                                        <span className="fake-radiobutton">
+                                                                                                                                                            {ans.answer_detail}    
+                                                                                                                                                        </span>
+                                                                                                                                                    </span>
+                                                                                                                                                </label>
+                                                                                                    
                                                                                                                                             );
                                                                                                                                         })
-                                                                                                                                    }
+                                                                                                                                            }
                                                                                                                                 </td> 
                                                                                                                             </tr>
                                                                                                                         );
