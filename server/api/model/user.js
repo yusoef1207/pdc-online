@@ -5,7 +5,7 @@ var User = {
     },
     getById: function(id, callback) {  
         return db.query(`Select 
-            ta.*, tap.applicant_program_id, tah.photo, tah.login_time, tat.status as is_tutorial_viewed
+            ta.*, tap.applicant_program_id, tap.program_id, tah.photo, tah.login_time, tat.status as is_tutorial_viewed
             from tapplicant ta 
             left join tapplicantprogram tap on tap.applicant_id = ta.applicant_id 
             left join tapplicanthistory tah on tah.applicant_id = ta.applicant_id

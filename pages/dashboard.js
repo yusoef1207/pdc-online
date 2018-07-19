@@ -19,13 +19,23 @@ class Dashboard extends Component {
 
 	componentDidMount () {
 		if(getCookies('PDCLOGID')) {
-			axios.get(`${this.backendUrl}/program`).then((res) => {
-				if(res.data) this.setState({program: res.data})
-			})
-			var catchLog = JSON.parse(decodeURIComponent(getCookies('PDCLOGID')));
+			axios.get(`${this.backendUrl}/program`).then((prog) => {
+				if(prog.data) {
+					var program = [];
+					var catchLog = JSON.parse(decodeURIComponent(getCookies('PDCLOGID')));
 
-			axios.get(`${this.backendUrl}/user/${catchLog.u}`).then(res => {
-				if(res.data) this.setState({user: res.data, isLoading: false})
+					axios.get(`${this.backendUrl}/user/${catchLog.u}`).then(user => {
+						if(user.data) {
+							this.setState({
+								program: prog.data.filter((p, i) => {
+									return p.program_id != user.data.program_id
+								})
+							})
+
+							this.setState({user: user.data, isLoading: false})
+						}
+					})
+				}
 			})
 		}else {
 			window.location.pathname = '/';

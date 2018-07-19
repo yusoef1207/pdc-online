@@ -31,13 +31,11 @@ class Header extends Component {
 								</a>
 							</div>
 							<div className="navbar-container container-fluid">
-								
-
 
 								<ul className="nav-right">
 									<li className="user-profile header-notification">
 										<a href="#!">
-											<img src="/static/images/user.png" alt="User-Profile-Image" />
+											<img src={user.photo} style={{borderRadius: '100%', height: '40px'}} alt="User-Profile-Image" />
 											<span>{user.first_name}</span>
 											<i className="ti-angle-down"></i>
 										</a>
