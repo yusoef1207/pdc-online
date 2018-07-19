@@ -542,21 +542,19 @@ console.log("payload", payload);
                                                                                     </ul>
                                                                                     <div className="row">
                                                                                         <div className="col-md-6 offset-md-6" style={{textAlign:'right', fontSize:'17px'}}>
-                                                                                            <a onClick={this.prevPage.bind(this, this.state.prev)}>
-                                                                                                <label className="label label-inverse-primary"><i className="ti-angle-double-left"></i> Sebelumnya</label>
+                                                                                            <a style={{marginRight:'20px'}} onClick={this.prevPage.bind(this, this.state.prev)}>
+                                                                                                <label style={{ fontSize:'15px',cursor:'pointer'}} className="label label-inverse-primary"><i className="ti-angle-double-left"></i> Sebelumnya</label>
                                                                                             </a>
                                                                                             <a onClick={this.nextPage.bind(this, this.state.next)}>
-                                                                                                <label className="label label-inverse-primary">Berikutnya<i className="ti-angle-double-right"></i></label>
+                                                                                                <label style={{ fontSize:'15px',cursor:'pointer'}}  className="label label-inverse-primary">Berikutnya<i className="ti-angle-double-right"></i></label>
+                                                                                            </a>
+
+                                                                                            <a style={{ fontWeight:'bold',color:'#fff'}} className="btn btn-success" onClick={this.submitAnswer.bind(this)}>
+                                                                                                SUBMIT
                                                                                             </a>
                                                                                         </div>
                                                                                     </div>
-                                                                                    <div className="row">
-                                                                                        <div className="col-md-6 offset-md-6" style={{textAlign:'right', fontSize:'17px'}}>
-                                                                                            <a className="btn btn-success" onClick={this.submitAnswer.bind(this)}>
-                                                                                                Submit
-                                                                                            </a>
-                                                                                        </div>
-                                                                                    </div>
+                        
                                                                                 </div>
                                                                             </div>
                                                                         </div>
