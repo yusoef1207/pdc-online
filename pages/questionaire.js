@@ -257,6 +257,90 @@ console.log("payload", payload);
     render () {
         const {user, isLoading, drafts} = this.state;
         
+        let tabs = [];
+        let tables = [];
+
+        this.state.questions.forEach((tab, tIdx) => {
+            tabs.push(
+                <li key={tIdx} className="nav-item">
+                    <a onClick={this.setPage.bind(this, tIdx + 1)} className={`nav-link ${this.state.page == (tIdx + 1) ? 'active' : ''}`} data-toggle="tab" href={`#questions-${tIdx}`} role="tab">
+                        {tIdx * 10 + 1} - {(tIdx + 1) * 10}
+                        {this.state.submitted && tab.answered.length != tab.totalQuestions ? (<label className="badge badge-danger" style={{marginBottom:'0px'}}>!</label>) : null}
+                    </a>
+                </li>
+            );
+
+            if((this.state.page - 1) == tIdx) {
+                tables.push(
+                    <div key={tIdx} className={`tab-pane active`} id={`questions-${tIdx+1}`} role="tabpanel">
+                        <div className="table-responsive">
+                            <table className="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th width="10%">#</th>
+                                        <th width="50%">Question</th>
+                                        <th width="60%">Your Oppinion</th>
+                                    </tr>
+                                </thead>   
+                                <tbody id="row">
+
+                                {
+                                    tab.map((res, qIdx) => {
+                                        return (
+                                            <tr key={'tr-'+qIdx} style={!drafts[res.question_id] && this.state.submitted ? {backgroundColor: '#f2dede'} : {backgroundColor: 'white'}}>
+                                                <th scope="row">{(this.state.page - 1)*10 +qIdx+1}</th> 
+                                                <td style={{whiteSpace:'normal'}}>  
+                                                    <p>{res.question_detail}</p> 
+                                                </td>
+                                                <td>
+                                                    {
+                                                        this.state.activeTutorial == 2 ?
+                                                        (
+                                                            <div className="tutorial tutorial-2">
+                                                                <span className="tooltip-content">
+                                                                    <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
+                                                                        <label className="badge badge-warning">Tutorial 2</label><br></br>
+                                                                        Pilih jawaban anda dengan klik salah satu skala angka 0 - 4<br></br>
+                                                                        ( 0 = Sangat tidak setuju | 1 = Tidak setuju | 2 = Ragu-ragu | 3 = Setuju | 4 =  Sangat setuju)
+                                                                        <br></br><label className="badge badge-success" onClick={this.nextTutorial.bind(this)}>Selanjutnya ></label>
+                                                                    </span>
+                                                                </span>
+                                                            </div> 
+                                                        ) : null 
+                                                    }
+                                                     
+                                                    {
+                                                        res.answer.map((ans, aIdx)=>{
+
+                                                            return (
+                                                                <label className="radio-button" key={'q-'+aIdx}>
+                                                                    <input 
+                                                                        defaultChecked={drafts[res.question_id] === ans.answer_id} 
+                                                                        onChange={this.setAnswer.bind(this, ans.answer_id, res.question_id, qIdx, tIdx)} 
+                                                                        name={`answer-${res.question_id}`} 
+                                                                        type="radio"
+                                                                    />
+                                                                    <span className="label-visible"> 
+                                                                        <span className="fake-radiobutton"></span>
+                                                                        {ans.answer_detail}   
+                                                                    </span>
+                                                                </label>
+                                                            );
+                                                        })
+                                                    }
+                                                </td> 
+                                            </tr>
+                                        );
+                                    })
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )
+            }
+        })
+
         return (
             <div>
                 <LoadComponent hide={isLoading}/>
@@ -405,108 +489,18 @@ console.log("payload", payload);
                                                                                     </div>                                        
                                                                                     <ul className="nav nav-tabs tabs" role="tablist" style={{overflowY:'hidden'}}>
                                                                                         {
-                                                                                            this.state.questions.map((tab, idx) => {
-                                                                                                return (
-                                                                                                    <li key={idx} className="nav-item">
-                                                                                                        <a onClick={this.setPage.bind(this, idx + 1)} className={`nav-link ${this.state.page == (idx + 1) ? 'active' : ''}`} data-toggle="tab" href={`#questions-${idx}`} role="tab">
-                                                                                                            {idx * 10 + 1} - {(idx + 1) * 10}
-                                                                                                            {this.state.submitted && tab.answered.length != tab.totalQuestions ? (<label className="badge badge-danger" style={{marginBottom:'0px'}}>!</label>) : null}
-                                                                                                        </a>
-                                                                                                    </li>
-                                                                                                );
-                                                                                            })
+                                                                                            tabs
                                                                                         }
                                                                                     </ul>
                                                                                     <div className="tab-content tabs">
                                                                                         {
-                                                                                            this.state.questions.map((tab, tIdx) => {
-
-                                                                                                return (
-                                                                                                    <div key={tIdx} className={`tab-pane ${this.state.page == (tIdx + 1) ? 'active' : ''}`} id={`questions-${tIdx+1}`} role="tabpanel">
-                                                                                                        <div className="table-responsive">
-                                                                                                            <table className="table table-hover">
-                                                                                                                <thead>
-                                                                                                                    <tr>
-                                                                                                                        <th width="10%">#</th>
-                                                                                                                        <th width="50%">Question</th>
-                                                                                                                        <th width="60%">Your Oppinion</th>
-                                                                                                                    </tr>
-                                                                                                                </thead>   
-                                                                                                                <tbody id="row">
-
-                                                                                                                {
-                                                                                                                    tab.map((res, qIdx) => {
-                                                                                                                        return (
-                                                                                                                            <tr key={'tr-'+qIdx} style={!drafts[res.question_id] && this.state.submitted ? {backgroundColor: '#f2dede'} : {backgroundColor: 'white'}}>
-                                                                                                                                <th scope="row">{(this.state.page - 1)*10 +qIdx+1}</th> 
-                                                                                                                                <td style={{whiteSpace:'normal'}}>  
-                                                                                                                                    <p>{res.question_detail}</p> 
-                                                                                                                                </td>
-                                                                                                                                <td>
-                                                                                                                                    {
-                                                                                                                                        this.state.activeTutorial == 2 ?
-                                                                                                                                        (
-                                                                                                                                            <div className="tutorial tutorial-2">
-                                                                                                                                                <span className="tooltip-content">
-                                                                                                                                                    <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
-                                                                                                                                                        <label className="badge badge-warning">Tutorial 2</label><br></br>
-                                                                                                                                                        Pilih jawaban anda dengan klik salah satu skala angka 0 - 4<br></br>
-                                                                                                                                                        ( 0 = Sangat tidak setuju | 1 = Tidak setuju | 2 = Ragu-ragu | 3 = Setuju | 4 =  Sangat setuju)
-                                                                                                                                                        <br></br><label className="badge badge-success" onClick={this.nextTutorial.bind(this)}>Selanjutnya ></label>
-                                                                                                                                                    </span>
-                                                                                                                                                </span>
-                                                                                                                                            </div> 
-                                                                                                                                        ) : null 
-                                                                                                                                    }
-                                                                                                                                     
-                                                                                                                                    {
-                                                                                                                                        res.answer.map((ans, aIdx)=>{
-
-                                                                                                                                            return (
-                                                                                                                                                <label className="radio-button">
-                                                                                                                                                    <input 
-                                                                                                                                                        defaultChecked={drafts[res.question_id] === ans.answer_id} 
-                                                                                                                                                        onChange={this.setAnswer.bind(this, ans.answer_id, res.question_id, qIdx, tIdx)} 
-                                                                                                                                                        name={`answer-${res.question_id}`} 
-                                                                                                                                                        type="radio"
-                                                                                                                                                    />
-                                                                                                                                                    <span className="label-visible"> 
-                                                                                                                                                        <span className="fake-radiobutton">
-                                                                                                                                                             
-                                                                                                                                                        </span>
-                                                                                                                                                        {ans.answer_detail}   
-                                                                                                                                                    </span>
-                                                                                                                                                </label>
-                                                                                                    
-                                                                                                                                            );
-                                                                                                                                        })
-                                                                                                                                            }
-                                                                                                                                </td> 
-                                                                                                                            </tr>
-                                                                                                                        );
-                                                                                                                    })
-                                                                                                                }
-                                                                                                                </tbody>
-                                                                                                            </table>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                );
-                                                                                            })
+                                                                                            tables
                                                                                         }
                                                                                     </div>
 
                                                                                     <ul className="nav nav-tabs tab-below tabs" role="tablist">
                                                                                         {
-                                                                                            this.state.questions.map((tab, idx) => {
-                                                                                                return (
-                                                                                                    <li key={idx} className="nav-item">
-                                                                                                        <a onClick={this.setPage.bind(this, idx + 1)} className={`nav-link ${this.state.page == (idx + 1) ? 'active' : ''}`} data-toggle="tab" href={`#questions-${idx+1}`} role="tab">
-                                                                                                            {idx * 10 + 1} - {(idx + 1) * 10}
-                                                                                                            {this.state.submitted && tab.answered.length != tab.totalQuestions ? (<label className="badge badge-danger" style={{marginBottom:'0px'}}>!</label>) : null}
-                                                                                                        </a>
-                                                                                                    </li>
-                                                                                                );
-                                                                                            })
+                                                                                           tabs
                                                                                         }
 
                                                                                         {(() => {
@@ -542,19 +536,29 @@ console.log("payload", payload);
                                                                                     </ul>
                                                                                     <div className="row">
                                                                                         <div className="col-md-6 offset-md-6" style={{textAlign:'right', fontSize:'17px'}}>
-                                                                                            <a style={{marginRight:'20px'}} onClick={this.prevPage.bind(this, this.state.prev)}>
-                                                                                                <label style={{ fontSize:'15px',cursor:'pointer'}} className="label label-inverse-primary"><i className="ti-angle-double-left"></i> Sebelumnya</label>
-                                                                                            </a>
-                                                                                            <a onClick={this.nextPage.bind(this, this.state.next)}>
-                                                                                                <label style={{ fontSize:'15px',cursor:'pointer'}}  className="label label-inverse-primary">Berikutnya<i className="ti-angle-double-right"></i></label>
-                                                                                            </a>
-
-                                                                                            <a style={{ fontWeight:'bold',color:'#fff'}} className="btn btn-success" onClick={this.submitAnswer.bind(this)}>
-                                                                                                SUBMIT
-                                                                                            </a>
+                                                                                            {
+                                                                                                this.state.page != 1 ? 
+                                                                                                (
+                                                                                                    <a style={{marginRight:'20px'}} onClick={this.prevPage.bind(this, this.state.prev)}>
+                                                                                                        <label style={{ fontSize:'15px',cursor:'pointer'}} className="label label-inverse-primary"><i className="ti-angle-double-left"></i> Sebelumnya</label>
+                                                                                                    </a>
+                                                                                                ) : null
+                                                                                            }
+                                                                                            {
+                                                                                                this.state.page != this.state.questions.length ?
+                                                                                                (
+                                                                                                    <a onClick={this.nextPage.bind(this, this.state.next)}>
+                                                                                                        <label style={{ fontSize:'15px',cursor:'pointer'}}  className="label label-inverse-primary">Berikutnya<i className="ti-angle-double-right"></i></label>
+                                                                                                    </a>
+                                                                                                ) : 
+                                                                                                (
+                                                                                                    <a style={{ fontWeight:'bold',color:'#fff'}} className="btn btn-success" onClick={this.submitAnswer.bind(this)}>
+                                                                                                        SUBMIT
+                                                                                                    </a>
+                                                                                                )
+                                                                                            }
                                                                                         </div>
                                                                                     </div>
-                        
                                                                                 </div>
                                                                             </div>
                                                                         </div>
