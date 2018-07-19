@@ -8,7 +8,7 @@ export default class MyDocument extends Document {
           <title>PDC</title>
           <meta charSet="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
-          <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon" />
+          <link rel="icon" href="/static/images/pdc_icon.png" type="image/x-icon" />
           
           <link rel="stylesheet" href="/_next/static/style.css" />
           <link rel="stylesheet" href="/static/plugins/bootstrap/dist/css/bootstrap.min.css" />
