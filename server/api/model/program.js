@@ -3,12 +3,19 @@ var db = require('../../db');
 var Program = {
     getAllProgram: function(callback) {  
         return db.query(`Select 
-        	tp.*, COUNT(tpq.question_id) as question 
-        	from tprogram tp 
-        	left join 
-        		tprogramquestion tpq on tpq.program_id = tp.program_id
-        	group by tp.program_id
+            tp.*, COUNT(tpq.question_id) as question 
+            from tprogram tp 
+            left join 
+                tprogramquestion tpq on tpq.program_id = tp.program_id
+            group by tp.program_id
         `, callback);  
+    },
+    getProgramById: function(programId, callback) {  
+        return db.query(`Select 
+        	tp.*
+        	from tprogram tp 
+        	where tp.program_id = ?
+        `, [programId], callback);  
     },
     getAllQuestion: function(programId, callback) {  
         return db.query(`Select 

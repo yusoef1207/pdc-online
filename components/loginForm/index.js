@@ -14,17 +14,29 @@ class Login extends Component {
 			password: null,
 			emailInvalid: false,
 			submitted: false,
-			isLoading: false
+			isLoading: false,
+			program: null
 		}
 	
 	}
 
 	componentDidMount() {
-		if(window.location.search.indexOf('email=') > -1) {
-			var email = window.location.search.replace('?email=', '');
+		var email = this.getParameterByName('email');
+		if(email) {
+			var program = this.getParameterByName('program');
 			$('[name="email"]').val(email);
-			this.setState({email : email});
+			this.setState({email : email, program: program});
 		}
+	}
+
+	getParameterByName(name, url) {
+		if (!url) url = window.location.href;
+		name = name.replace(/[\[\]]/g, '\\$&');
+		var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+		results = regex.exec(url);
+		if (!results) return null;
+		if (!results[2]) return '';
+		return decodeURIComponent(results[2].replace(/\+/g, ' '));
 	}
 
 	fill(name) {
@@ -42,8 +54,29 @@ class Login extends Component {
 				password: $('[name="password"]').val()
 			}).then((res) => {
 				if(res.data) {
-					setCookies('PDCLOGID', encodeURIComponent(JSON.stringify({u:res.data.applicant_id,t:moment().format('YYYY-MM-DD H:m:s')})));
-					window.location.replace('/dashboard');
+					
+					if(this.state.program) {
+						
+						axios.get(`${this.backendUrl}/program/${this.state.program}`).then((program) => {
+							if(program.data) {
+								
+								setCookies('PDCLOGID', encodeURIComponent(JSON.stringify({u:res.data.applicant_id,t:moment().format('YYYY-MM-DD H:m:s')})));
+								setCookies('PROG-ID', encodeURIComponent(JSON.stringify({id:program.data.program_id,duration:program.data.duration})));
+								window.location.replace('/before-start');
+							
+							} else {
+								notify('Program tidak ditemukan', 'danger');
+								this.setState({isLoading: false});
+							}
+						});
+
+					} else {
+
+						setCookies('PDCLOGID', encodeURIComponent(JSON.stringify({u:res.data.applicant_id,t:moment().format('YYYY-MM-DD H:m:s')})));
+						window.location.replace('/dashboard');
+					
+					}
+
 				} else {
 					notify('User tidak ditemukan', 'danger');
 					this.setState({emailInvalid : true, isLoading: false});

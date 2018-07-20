@@ -30,6 +30,7 @@ app.prepare()
     server.post('/answer-history', api.program);
     server.post('/answer', api.program);
     server.get('/program', api.program);
+    server.get('/program/:id', api.program);
     server.get('/question/:id', api.program);
 
     server.get('/before-start', (req, res) => {

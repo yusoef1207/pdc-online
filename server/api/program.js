@@ -12,6 +12,20 @@ router.get('/program', function(req, res, next) {
     }); 
 });
 
+router.get('/program/:id', function(req, res, next) {  
+	if(req.params.id) {
+	    Program.getProgramById(req.params.id, function(err, results, fields) {
+	        if (err) {  
+	            res.json(err);  
+	        } else {  
+	            res.json(results[0]);
+	        }  
+	    }); 
+	}else {
+    	res.json({})
+    }
+});
+
 router.post('/answer-history', function(req, res, next) {  
     Program.answerHistory(req.body, function(err, results, fields) {
         if (err) {  
