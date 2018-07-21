@@ -222,7 +222,7 @@ console.log("payload", payload);
             
             ++totalSeconds;
             timeLeft = parseInt(totalSeconds/60); //check with minutes
-            timeLeft = totalSeconds; //check with seconds
+            // timeLeft = totalSeconds; //check with seconds
 
             if(timeLeft >= this.state.timeLeft + 10) {
                 this.setState({timeLeft : timeLeft})
@@ -236,6 +236,22 @@ console.log("payload", payload);
                 if(diff <= 0) {
                     clearInterval(x); 
                     notify('Waktu Berakhir', 'inverse');
+                    if(diff == 0) {
+                        var drafts = this.state.drafts;
+                        if(Object.keys(drafts).length) {
+                            axios.post(`${this.backendUrl}/answer`, {
+                                data : Object.keys(drafts).map((d) => {
+                                    return d
+                                }),
+                                applicantId : this.state.user.applicant_id,
+                                applicantProgramId : this.state.user.applicant_program_id,
+                                selectedTime: moment().format('YYYY-MM-DD H:m:s')
+                            }).then((res) => {
+                                this.setState({answerHasSent: true});
+                                removeCookie('answer-draft');
+                            });  
+                        }
+                    }
                 }
             }
         }, 1000);

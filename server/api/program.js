@@ -62,6 +62,8 @@ router.post('/answer', function(req, res, next) {
 	            res.json(results);
 	        }
 	    });
+	} else {
+		res.json({message: 'answer empty', status: 422})
 	}
 });
 
