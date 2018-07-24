@@ -25,6 +25,7 @@ var Program = {
         		tquestion tq on tq.question_id = tpq.question_id
         	where tpq.program_id = ${programId}
         	and approval_status = 'Approved'
+            order by tq.question_id asc
         `, callback);  
     },
     getAllAnswer: function(questionId, callback) {  
