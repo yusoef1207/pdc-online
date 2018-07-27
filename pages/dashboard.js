@@ -27,9 +27,7 @@ class Dashboard extends Component {
 					axios.get(`${this.backendUrl}/user/${catchLog.u}`).then(user => {
 						if(user.data) {
 							this.setState({
-								program: prog.data.filter((p, i) => {
-									return p.program_id != user.data.program_id
-								})
+								program: prog.data
 							})
 
 							this.setState({user: user.data, isLoading: false})
