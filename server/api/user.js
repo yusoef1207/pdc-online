@@ -18,7 +18,20 @@ router.get('/user/:id?', function(req, res, next) {
 	        if (err) {  
 	            res.json(err);  
 	        } else {  
-	            res.json(results[0]);
+                if(results[0]) {
+                    User.getAnsweredProgram(req.params.id, function(err, ans, fields) {
+                        var user = results[0];                        
+                        user.answeredQuestions = [];
+                        if (err) {  
+                            res.json(err);  
+                        }else {
+                            user.answeredQuestions = ans;
+                        }
+
+                        res.json(user);
+                    })
+                }
+	            // res.json(results[0]);
 	        }  
 	    });  
 	} 

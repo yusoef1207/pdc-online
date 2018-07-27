@@ -15,6 +15,15 @@ var User = {
             limit 1
         `, [id], callback);  
     },
+    getAnsweredProgram: function(id, callback) {  
+        return db.query(`Select 
+            taa.applicant_id, 
+            tap.program_id
+            from tappllicantanswer taa 
+            left join tapplicantprogram tap on tap.applicant_program_id = taa.applicant_program_id
+            where taa.applicant_id = ?
+            group by tap.program_id`, [id], callback);  
+    },
     addPhoto: function(data, callback) {  
         db.query("Insert into tapplicanthistory (applicant_id, client_id, login_time, photo) values(?,?,?,?)", [data.applicant_id, data.client_id, data.login_time, data.photo], function(err, res, field) {
             if (err) {  

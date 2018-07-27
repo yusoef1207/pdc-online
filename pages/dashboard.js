@@ -26,11 +26,23 @@ class Dashboard extends Component {
 
 					axios.get(`${this.backendUrl}/user/${catchLog.u}`).then(user => {
 						if(user.data) {
-							this.setState({
-								program: prog.data
-							})
+							var program = [];
 
-							this.setState({user: user.data, isLoading: false})
+							if(user.data.answeredQuestions.length) {
+								user.data.answeredQuestions.forEach((d, k) => {
+									prog.data.forEach((p, i) => {
+										if(p.program_id != d.program_id) program.push(p)
+									})
+								})
+							} else {
+								program = prog.data;
+							}
+							
+							this.setState({
+								program: program,
+								user: user.data, 
+								isLoading: false
+							})
 						}
 					})
 				}
