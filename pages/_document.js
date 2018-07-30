@@ -44,6 +44,7 @@ export default class MyDocument extends Document {
 
           <script src="/static/js/demo-12.js"></script>
         </body>
+        
       </html>
     )
   }
