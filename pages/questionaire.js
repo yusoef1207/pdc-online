@@ -380,7 +380,7 @@ console.log("payload", payload);
                                                     <div className="page-wrapper p-0">
                                                         <div className="page-header">
                                                             <div className="page-header-title">
-                                                                <h4 style={{fontSize:'30px'}}>PT. Roosled Sinergi Minterindo</h4>
+                                                                <h4 style={{fontSize:'30px'}}>PT. Roosled Sinergi Minterindo </h4>
                                                             </div>
                                                             
                                                             <div className="page-header-breadcrumb">
