@@ -29,6 +29,17 @@ File: style.css
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
+
+.bottomMenu {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  padding:20px;
+  background-color:#8CDDCD;
+  z-index: 1;
+}
+
 body {
   background-color: #f3f3f3;
   font-size: 0.875em;

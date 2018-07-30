@@ -18,6 +18,28 @@ class Header extends Component {
 		return (
 			<div>
 				<div className="pcoded-overlay-box"></div>
+				<div className="bottomMenu">
+					<p style={{display:'inline-block',marginRight:'20px',fontWeight:'700',marginBottom:'0px'}}>Skala Jawaban : </p>
+					<div style={{margin: '0px', fontSize: '15px'}} className="label-main">
+							<label className="label label-info">4 = Yakin Sepenuhnya</label>
+					</div>
+
+						<div style={{margin: '0px', fontSize: '15px'}} className="label-main">
+							<label className="label label-info">3 = Sangat Yakin</label>
+					</div>
+
+					<div style={{margin: '0px', fontSize: '15px'}} className="label-main">
+							<label className="label label-info">2 = Cukup Yakin</label>
+					</div>
+
+					<div style={{margin: '0px', fontSize: '15px'}} className="label-main">
+							<label className="label label-info">1 = Kurang Yakin</label>
+					</div>
+
+					<div style={{margin: '0px', fontSize: '15px'}} className="label-main">
+							<label className="label label-info">0 = tidak yakin sepenuhnya</label>
+					</div>
+				</div>
 				<div className="pcoded-container navbar-wrapper">
 
 					<nav className="navbar header-navbar pcoded-header" >
@@ -40,11 +62,6 @@ class Header extends Component {
 											<i className="ti-angle-down"></i>
 										</a>
 										<ul className="show-notification profile-notification">
-											<li>
-												<a href="auth-lock-screen.html">
-													<i className="ti-lock"></i> Lock Screen
-												</a>
-											</li>
 											<li>
 												<a href="#" onClick={this.logout.bind(this)}>
 													<i className="ti-layout-sidebar-left"></i> Logout

@@ -317,7 +317,7 @@ console.log("payload", payload);
                                                                     <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
                                                                         <label className="badge badge-warning">Tutorial 2</label><br></br>
                                                                         Pilih jawaban anda dengan klik salah satu skala angka 0 - 4<br></br>
-                                                                        ( 0 = Sangat tidak setuju | 1 = Tidak setuju | 2 = Ragu-ragu | 3 = Setuju | 4 =  Sangat setuju)
+                                                                        ( 0 = tidak yakin sepenuhnya | 1 = Kurang Yakin | 2 = cukup Yakin | 3 = Sangat Yakin | 4 =  Yakin Sepenuhnya)
                                                                         <br></br><label className="badge badge-success" onClick={this.nextTutorial.bind(this)}>Selanjutnya ></label>
                                                                     </span>
                                                                 </span>
@@ -376,11 +376,13 @@ console.log("payload", payload);
                                                 )
                                             } else {
                                                 return (
+                                                    
                                                     <div className="page-wrapper p-0">
                                                         <div className="page-header">
                                                             <div className="page-header-title">
                                                                 <h4 style={{fontSize:'30px'}}>PT. Roosled Sinergi Minterindo</h4>
                                                             </div>
+                                                            
                                                             <div className="page-header-breadcrumb">
                                                                 <ul className="breadcrumb-title">
                                                                     <li className="breadcrumb-item">
@@ -475,26 +477,34 @@ console.log("payload", payload);
                                                                            
                                                                             <span>
                                                                                 <div style={{margin: '0px', fontSize: '14px'}} className="label-main">
-                                                                                        <label className="label label-info">0 = Sangat tidak setuju</label>
+                                                                                        <label className="label label-info">4 = Yakin Sepenuhnya</label>
                                                                                 </div>
+
+                                                                                 <div style={{margin: '0px', fontSize: '14px'}} className="label-main">
+                                                                                        <label className="label label-info">3 = Sangat Yakin</label>
+                                                                                </div>
+
                                                                                 <div style={{margin: '0px', fontSize: '14px'}} className="label-main">
-                                                                                        <label className="label label-info">1 = Tidak setuju </label>
+                                                                                        <label className="label label-info">2 = Cukup Yakin</label>
                                                                                 </div>
+
                                                                                 <div style={{margin: '0px', fontSize: '14px'}} className="label-main">
-                                                                                        <label className="label label-info">2 = Ragu-ragu </label>
+                                                                                        <label className="label label-info">1 = Kurang Yakin</label>
                                                                                 </div>
+
                                                                                 <div style={{margin: '0px', fontSize: '14px'}} className="label-main">
-                                                                                        <label className="label label-info">3 = Setuju</label>
+                                                                                        <label className="label label-info">0 = tidak yakin sepenuhnya</label>
                                                                                 </div>
-                                                                                <div style={{margin: '0px', fontSize: '14px'}} className="label-main">
-                                                                                        <label className="label label-info">4 =  Sangat setuju</label>
-                                                                                </div>
+                                                                                
+                                                                                
+                                                                               
+                                                                                
                                                                             </span>
                                                                             <div className="card-header-right">
                                                                                 <i className="icofont icofont-rounded-down"></i>
                                                                             </div>
                                                                         </div>
-                                                                        <div className="card-block">
+                                                                        <div className="card-block" style={{marginBottom:"25px"}}>
                                                                             <div className="row">
                                                                                 <div className="col-lg-12 col-lg-12">
                                                                                     <div className="sub-title">Waktu Test : 

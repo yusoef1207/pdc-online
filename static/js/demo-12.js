@@ -1,4 +1,14 @@
 
+$(document).scroll(function () {
+	var y = $(this).scrollTop();
+	if (y > 100) {
+		$('.bottomMenu').fadeIn();
+	} else {
+		$('.bottomMenu').fadeOut();
+	}
+
+});
+
 $( document ).ready(function() {
 	$( "#pcoded" ).pcodedmenu({
 		themelayout: 'vertical',
