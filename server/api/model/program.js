@@ -33,6 +33,7 @@ var Program = {
         	ta.*
         	from tanswer ta 
         	where ta.question_id in (${questionId})
+            order by ta.answer_id desc
         `, callback);  
     },
     answerHistory : function (data, callback) {

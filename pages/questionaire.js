@@ -30,7 +30,8 @@ class Tutorial extends Component {
             page: 1,
             activeTutorial: null,
             drafts: {},
-            answerHasSent: false
+            answerHasSent: false,
+            duration: 0
         }
     }
 
@@ -45,17 +46,14 @@ class Tutorial extends Component {
                     window.location = 'before-start';
                 }
 
-                if(!res.data.is_tutorial_viewed) {
-                    this.setState({activeTutorial: 1});
-                }
-
                 let drafts = getCookies('answer-draft') ? JSON.parse(getCookies('answer-draft')) : {};
 
                 this.setState({drafts: drafts});
 
-                let program = JSON.parse(decodeURIComponent(getCookies('PROG-ID')))
+                let program = decodeURIComponent(getCookies('PROG-ID'));
 
                 if(program){
+                    program = JSON.parse(program);
                     axios.get(`${this.backendUrl}/question/${program.id}`).then((res) => {
                         if(res.data) {
                             let questions = this.chunkArray(res.data, 10);
@@ -75,11 +73,17 @@ class Tutorial extends Component {
 
                                 questions[idx].totalQuestions = totalQuestions[idx] ? totalQuestions[idx] : 0;
 
-                            })
+                            });
 
-                            this.setState({questions: questions, isLoading: false})
                             let duration = 60 * program.duration || 1;
-                            this.startTimer(duration)
+                            this.setState({questions: questions, isLoading: false, duration: duration});
+
+                            if(!res.data.is_tutorial_viewed) {
+                                this.setState({activeTutorial: 1});
+                            } else {
+                                //START TIMER
+                                this.startTimer(duration);
+                            }
                         }
                     });
                 } else {
@@ -115,6 +119,7 @@ class Tutorial extends Component {
         }).then((res) => {
             if(res.status == 200) {
                 this.setState({activeTutorial: null})
+                this.startTimer(this.state.duration);
             }
         })
     }
@@ -379,7 +384,7 @@ console.log("payload", payload);
                                                     <div className="page-wrapper p-0">
                                                         <div className="page-header">
                                                             <div className="page-header-title">
-                                                                <h4 style={{fontSize:'30px'}}>PT. Roosled Sinergi Minterindo</h4>
+                                                                <h4 style={{fontSize:'30px'}}>{this.state.user.client_name}</h4>
                                                             </div>
                                                             <div className="page-header-breadcrumb">
                                                                 <ul className="breadcrumb-title">
