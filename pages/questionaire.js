@@ -39,10 +39,10 @@ class Tutorial extends Component {
         let catchLog = decodeURIComponent(getCookies('PDCLOGID'));
         if(catchLog) {
             catchLog = JSON.parse(catchLog)
-            axios.get(`${this.backendUrl}/user/${catchLog.u}`).then(res => {
-                if(res.data) this.setState({user: res.data})
+            axios.get(`${this.backendUrl}/user/${catchLog.u}`).then(user => {
+                if(user.data) this.setState({user: user.data})
 
-                if(!res.data.photo) {
+                if(!user.data.photo) {
                     window.location = 'before-start';
                 }
 
@@ -54,9 +54,9 @@ class Tutorial extends Component {
 
                 if(program){
                     program = JSON.parse(program);
-                    axios.get(`${this.backendUrl}/question/${program.id}`).then((res) => {
-                        if(res.data) {
-                            let questions = this.chunkArray(res.data, 10);
+                    axios.get(`${this.backendUrl}/question/1`).then((program) => {
+                        if(program.data) {
+                            let questions = this.chunkArray(program.data, 10);
                             let totalQuestions = [];
                             questions.forEach((d, idx) => {
                                 questions[idx].answered = [];
@@ -75,10 +75,10 @@ class Tutorial extends Component {
 
                             });
 
-                            let duration = 60 * program.duration || 1;
+                            let duration = getCookies('last_duration') || 60 * 2;
                             this.setState({questions: questions, isLoading: false, duration: duration});
 
-                            if(!res.data.is_tutorial_viewed) {
+                            if(!user.data.is_tutorial_viewed) {
                                 this.setState({activeTutorial: 1});
                             } else {
                                 //START TIMER
@@ -159,13 +159,6 @@ class Tutorial extends Component {
             })
         });
 
-console.log("questions", questions);
-
-console.log("Object.keys(drafts).length", Object.keys(drafts).length);
-
-console.log("totalQuestion", totalQuestion);
-
-console.log("payload", payload);
         if(totalQuestion == payload.length) {
             axios.post(`${this.backendUrl}/answer`, {
                 data : payload,
@@ -228,7 +221,8 @@ console.log("payload", payload);
             ++totalSeconds;
             timeLeft = parseInt(totalSeconds/60); //check with minutes
             // timeLeft = totalSeconds; //check with seconds
-
+            setCookies('last_duration', diff);
+            
             if(timeLeft >= this.state.timeLeft + 10) {
                 this.setState({timeLeft : timeLeft})
                 notify(timeLeft + ' detik telah berakhir', 'inverse');
@@ -281,6 +275,7 @@ console.log("payload", payload);
         let tabs = [];
         let tables = [];
 
+console.log("this.state.activeTutorial", this.state.activeTutorial);
         this.state.questions.forEach((tab, tIdx) => {
             tabs.push(
                 <li key={tIdx} className="nav-item">
