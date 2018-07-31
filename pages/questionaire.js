@@ -316,7 +316,7 @@ console.log("this.state.activeTutorial", this.state.activeTutorial);
                                                                 <span className="tooltip-content">
                                                                     <span className="tooltip-text" style={{ width:'100%',display:'block'}}>
                                                                         <label className="badge badge-warning">Tutorial 2</label><br></br>
-                                                                        Pilih jawaban anda dengan klik salah satu skala angka 0 - 4<br></br>
+                                                                        Silahkan Pilih jawaban anda dengan klik salah satu skala angka 0 - 4<br></br>
                                                                         ( 0 = tidak yakin sepenuhnya | 1 = Kurang Yakin | 2 = cukup Yakin | 3 = Sangat Yakin | 4 =  Yakin Sepenuhnya)
                                                                         <br></br><label className="badge badge-success" onClick={this.nextTutorial.bind(this)}>Selanjutnya ></label>
                                                                     </span>
