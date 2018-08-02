@@ -54,9 +54,9 @@ class Tutorial extends Component {
 
                 if(program){
                     program = JSON.parse(program);
-                    axios.get(`${this.backendUrl}/question/1`).then((program) => {
-                        if(program.data) {
-                            let questions = this.chunkArray(program.data, 10);
+                    axios.get(`${this.backendUrl}/question/${program.id}`).then((response) => {
+                        if(response.data) {
+                            let questions = this.chunkArray(response.data, 10);
                             let totalQuestions = [];
                             questions.forEach((d, idx) => {
                                 questions[idx].answered = [];
@@ -75,7 +75,7 @@ class Tutorial extends Component {
 
                             });
 
-                            let duration = getCookies('last_duration') || 60 * 2;
+                            let duration = getCookies('last_duration') ? getCookies('last_duration') : 60 * program.duration;
                             this.setState({questions: questions, isLoading: false, duration: duration});
 
                             if(!user.data.is_tutorial_viewed) {
@@ -168,6 +168,8 @@ class Tutorial extends Component {
             }).then(() => {
                 this.setState({answerHasSent: true});
                 removeCookie('answer-draft');
+                removeCookie('last_duration');
+                removeCookie('PROG-ID');
             })
         }
     }
@@ -248,6 +250,8 @@ class Tutorial extends Component {
                             }).then((res) => {
                                 this.setState({answerHasSent: true});
                                 removeCookie('answer-draft');
+                                removeCookie('last_duration');
+                                removeCookie('PROG-ID');
                             });  
                         }
                     }
@@ -275,7 +279,6 @@ class Tutorial extends Component {
         let tabs = [];
         let tables = [];
 
-console.log("this.state.activeTutorial", this.state.activeTutorial);
         this.state.questions.forEach((tab, tIdx) => {
             tabs.push(
                 <li key={tIdx} className="nav-item">

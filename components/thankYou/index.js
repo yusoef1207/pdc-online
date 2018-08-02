@@ -23,7 +23,7 @@ class Navigation extends Component {
                     
                         <div className="col-md-6 offset-md-3">
                             <div className="card-block inverse-breadcrumb" style={{marginTop:'80px'}}>
-                                <h5 style={{textAlign:'center',lineHeight:'25px;'}}>Terima Kasih telah mengikuti Test ini. Silahkan Klik finish untuk menutup Program</h5>
+                                <h5 style={{textAlign:'center',lineHeight:'25px'}}>Terima Kasih telah mengikuti Test ini. Silahkan Klik finish untuk menutup Program</h5>
                                 <br></br>
                                 <a className="btn btn-success" style={{margin:'auto',display:'block',width:'50%'}} onClick={this.logout.bind(this)}>
                                      Finish
