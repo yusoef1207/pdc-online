@@ -92,7 +92,7 @@ class Start extends Component {
 										<div className="page-wrapper">
 											<div className="page-header">
 												<div className="page-header-title">
-													<h4 style={{fontSize:'30px'}}>PT. Roosled Sinergi Minterindo</h4>
+													<h4 style={{fontSize:'30px'}}>{this.state.user.client_name}</h4>
 												</div>
 												<div className="page-header-breadcrumb">
 													<ul className="breadcrumb-title">
@@ -110,7 +110,7 @@ class Start extends Component {
 											
 											<div className="page-body">
 
-												<div className="card-block inverse-breadcrumb">
+												<div className="card-block inverse-breadcrumb" style={{marginBottom:"100px"}}>
 
 												<h6 style={{textAlign:'center'}}>Waktu tes akan memberikan "warning" dengan suara dan font yang lebih besar setiap 10 menit <br/><br/>
 												Akan terdengar bunyi "bip" bila waktu tersisa 10 detik. sistem akan otomatis menutup Test apabila waktu telah habis.<br/><br/>
@@ -121,7 +121,7 @@ class Start extends Component {
 													{
 														this.state.screenshot ? 
 														<img src={this.state.screenshot} /> : 
-														<Webcam audio={false} ref='webcam' width={350} height={350} screenshotFormat="image/jpeg"/>
+														<Webcam audio={false} ref='webcam' style={{width:'100%'}} screenshotFormat="image/jpeg"/>
 													}
 													<div className="controls visible">
 														<a href="#" id="delete-photo" title="Delete Photo" onClick={this.deletePhoto.bind(this)}><i className="material-icons">delete</i></a>
@@ -132,7 +132,7 @@ class Start extends Component {
 												{
 													this.state.screenshot ? 
 													<a href="#" onClick={this.startTest.bind(this)} className="btn btn-success">Mulai Test!</a> :
-													<div className="btn btn-danger">Mulai Test!</div>
+													<div className="btn btn-danger" style={{marginTop:"20px"}}>Mulai Test!</div>
 												}
 												</h6>
 
