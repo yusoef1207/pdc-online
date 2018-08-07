@@ -9,6 +9,7 @@ class Header extends Component {
 	logout () {
 		removeCookie('PDCLOGID');
 		removeCookie('PROG-ID');
+		removeCookie('last_duration');
 		window.location.pathname = '/';
 	}
 

@@ -28,14 +28,16 @@ class Dashboard extends Component {
 						if(user.data) {
 							var program = [];
 
-							if(user.data.answeredQuestions.length) {
-								user.data.answeredQuestions.forEach((d, k) => {
-									prog.data.forEach((p, i) => {
-										if(p.program_id != d.program_id) program.push(p)
+							if(user.data.program_id) {
+								if(user.data.answeredQuestions.length) {
+									user.data.answeredQuestions.forEach((d, k) => {
+										prog.data.forEach((p, i) => {
+											if(p.program_id != d.program_id) program.push(p)
+										})
 									})
-								})
-							} else {
-								program = prog.data;
+								} else {
+									program = prog.data;
+								}
 							}
 							
 							this.setState({
