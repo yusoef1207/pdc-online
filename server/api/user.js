@@ -22,13 +22,23 @@ router.get('/user/:id?', function(req, res, next) {
                     User.getAnsweredProgram(req.params.id, function(err, ans, fields) {
                         var user = results[0];                        
                         user.answeredQuestions = [];
+                        user.batch = [];
                         if (err) {  
                             res.json(err);  
                         }else {
                             user.answeredQuestions = ans;
                         }
 
-                        res.json(user);
+                        User.getBatch(req.params.id, function(err, batch, fields) {
+                            
+                            if (err) {  
+                                res.json(err);  
+                            }else {
+                                user.batch = batch;
+                            }
+
+                            res.json(user);
+                        })
                     })
                 }
 	            // res.json(results[0]);

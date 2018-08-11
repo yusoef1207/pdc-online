@@ -27,7 +27,7 @@ class Dashboard extends Component {
 					axios.get(`${this.backendUrl}/user/${catchLog.u}`).then(user => {
 						if(user.data) {
 							var program = [];
-
+							var programWithBatch = [];
 							if(user.data.program_id) {
 								if(user.data.answeredQuestions.length) {
 									user.data.answeredQuestions.forEach((d, k) => {
@@ -37,11 +37,22 @@ class Dashboard extends Component {
 									})
 								} else {
 									program = prog.data;
+									programWithBatch = program;
+								}
+								
+								if(user.data.batch.length) {
+									user.data.batch.forEach(b => {
+										program.forEach((d, k) => {
+											if(b.program_id == d.program_id && b.approval_status.toLowerCase() == 'approved' && !b.is_expired) {
+												programWithBatch.push(d);
+											}
+										})
+									})
 								}
 							}
-							
+
 							this.setState({
-								program: program,
+								program: programWithBatch,
 								user: user.data, 
 								isLoading: false
 							})

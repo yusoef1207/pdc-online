@@ -5,7 +5,13 @@ var User = {
     },
     getById: function(id, callback) {  
         return db.query(`Select 
-            ta.*, tap.applicant_program_id, tap.program_id, tah.photo, tah.login_time, tat.status as is_tutorial_viewed, tc.client_name
+                ta.*, 
+                tap.applicant_program_id, 
+                tap.program_id, 
+                tah.photo, 
+                tah.login_time, 
+                tat.status as is_tutorial_viewed, 
+                tc.client_name
             from tapplicant ta 
             left join tapplicantprogram tap on tap.applicant_id = ta.applicant_id 
             left join tapplicanthistory tah on tah.applicant_id = ta.applicant_id
@@ -15,6 +21,17 @@ var User = {
             order by tah.login_time desc
             limit 1
         `, [id], callback);  
+    },
+    getBatch : function (appId, callback) {
+        return db.query(`Select 
+                tap.applicant_program_id,
+                tap.program_id,
+                tb.approval_status, 
+                tb.isExpired as is_expired,
+                tb.batch_end
+            from tapplicantprogram tap 
+            left join tbatch tb on tb.batch_id = tap.batch_id
+            where tap.applicant_id = ?`, [appId], callback); 
     },
     getAnsweredProgram: function(id, callback) {  
         return db.query(`Select 
